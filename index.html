@@ -56,13 +56,15 @@ canvas{display:block; width:100%; height:auto; aspect-ratio:16/9; image-renderin
 .prompt:active{transform:translateX(-50%) translateY(2px)}
 
 .stagewrap.talking .badge{display:none}
-.dialog{position:absolute; left:10px; right:10px; top:10px; max-height:60%; overflow:auto; cursor:pointer; padding:20px 14px 8px; font-size:clamp(12px,2.1cqw,16px); line-height:1.55; color:var(--ink); border-radius:12px}
+.dialog{position:absolute; left:50%; right:auto; transform:translateX(-50%); width:min(70%,620px); top:auto; bottom:37%; max-height:60%; overflow:auto; cursor:pointer; padding:13px 12px 4px; font-size:clamp(11px,1.8cqw,14.5px); line-height:1.38; color:var(--ink); border-radius:12px}
 .who{position:absolute; left:12px; top:-3px; transform:translateY(-50%); font:700 .8em var(--font-display); color:#fff; background:var(--blue); border:3px solid var(--blue-d); border-radius:999px; padding:0 12px; letter-spacing:.04em; box-shadow:0 2px 0 var(--blue-d)}
 .dialog{overflow:visible; max-height:none}
-.txt{min-height:3em}
+.txt{min-height:1.4em; padding-right:78px}
 .chips{display:flex; flex-direction:column; gap:5px; margin:8px 0 0; padding:0; list-style:none}
 .chips li{padding:5px 10px; background:var(--blue-l); border:2px solid #a9cde8; border-radius:8px; font-size:.92em; color:var(--brown-d)}
-.next{display:block; text-align:right; color:var(--blue-d); font:700 .75em var(--font-display); letter-spacing:.06em; margin-top:6px}
+.next{position:absolute; right:12px; bottom:4px; color:var(--blue-d); font:700 .75em var(--font-display); letter-spacing:.06em; line-height:1.2}
+@container (max-width:520px){ .txt{padding-right:28px} .dialog{width:calc(100% - 20px); padding-bottom:17px; font-size:11.5px} }
+.chips:not([hidden])~.next{position:static; display:block; text-align:right; margin-top:2px}
 
 .intro{position:absolute; inset:0; display:grid; place-content:center; justify-items:center; gap:12px; text-align:center; padding:16px;
   background:linear-gradient(rgba(207,230,238,.35), rgba(251,240,218,.82))}
@@ -1011,6 +1013,7 @@ function draw(){
 }
 
 /* ---------- dialog ---------- */
+function setTxt(){ const n=Math.floor(dlg.shown); if(n>=dlg.full.length){ txtEl.textContent=dlg.full; return; } txtEl.textContent=''; txtEl.appendChild(document.createTextNode(dlg.full.slice(0,n))); const h=document.createElement('span'); h.style.visibility='hidden'; h.textContent=dlg.full.slice(n); txtEl.appendChild(h); }
 const dialogEl=$('dialog'), whoEl=$('who'), txtEl=$('txt'), chipsEl=$('chips'), nextEl=$('next');
 const promptEl=$('prompt'), promptTxt=$('promptTxt'), introEl=$('intro');
 function revealChips(page){
@@ -1025,7 +1028,7 @@ function showPage(){
   dlg.full=subst(page.text); dlg.shown=reduce?dlg.full.length:0;
   chipsEl.hidden=true; chipsEl.innerHTML='';
   nextEl.textContent=dlg.idx===dlg.pages.length-1?'Đóng ▸':'Tiếp ▸';
-  txtEl.textContent=dlg.full.slice(0,Math.floor(dlg.shown));
+  setTxt();
   if(dlg.shown>=dlg.full.length) revealChips(page);
 }
 function openDialog(speaker,pages,onDone){
@@ -1344,7 +1347,7 @@ function update(dt){
 
   if(dlg&&dlg.shown<dlg.full.length){
     const tk=Math.floor(dlg.shown/2); dlg.shown=Math.min(dlg.full.length,dlg.shown+dt*55); if(Math.floor(dlg.shown/2)!==tk) sfx('talk');
-    txtEl.textContent=dlg.full.slice(0,Math.floor(dlg.shown));
+    setTxt();
     if(dlg.shown>=dlg.full.length) revealChips(dlg.pages[dlg.idx]);
   }
   for(let i=parts.length-1;i>=0;i--){ const q=parts[i]; q.life-=dt; q.x+=q.vx*dt; q.y+=q.vy*dt; q.vy+=90*dt; if(q.life<=0) parts.splice(i,1); }
