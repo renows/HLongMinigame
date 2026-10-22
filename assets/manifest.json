@@ -1,0 +1,50 @@
+{
+ "interact": {
+  "src": "assets/player_interact.png",
+  "w": 44,
+  "h": 65,
+  "n": 4
+ },
+ "jump": {
+  "src": "assets/player_jump.png",
+  "w": 70,
+  "h": 70,
+  "n": 5
+ },
+ "openchest": {
+  "src": "assets/player_openchest.png",
+  "w": 50,
+  "h": 69,
+  "n": 4
+ },
+ "wave": {
+  "src": "assets/player_wave.png",
+  "w": 52,
+  "h": 65,
+  "n": 4
+ },
+ "walk": {
+  "src": "assets/player_walk.png",
+  "w": 46,
+  "h": 66,
+  "n": 6
+ },
+ "celebrate": {
+  "src": "assets/player_celebrate.png",
+  "w": 50,
+  "h": 71,
+  "n": 4
+ },
+ "idle_alt": {
+  "src": "assets/player_idle_alt.png",
+  "w": 32,
+  "h": 66,
+  "n": 4
+ },
+ "run": {
+  "src": "assets/player_run.png",
+  "w": 64,
+  "h": 62,
+  "n": 6
+ }
+}
