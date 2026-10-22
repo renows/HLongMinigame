@@ -1,0 +1,1792 @@
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Hành Trình Sự Nghiệp</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;600&family=Chakra+Petch:wght@600;700&display=swap" rel="stylesheet">
+<style>
+/* UI: bảng giấy kem viền nâu, nút xanh ngọc, huy hiệu tròn — theo phong cách game mobile pixel */
+:root{
+  --sky:#cfe6ee; --sky2:#e9f3ea;
+  --paper:#fbf0da; --paper2:#f3e1bd; --paper3:#e8cf9f;
+  --brown:#7a4b2a; --brown-d:#4a2a16; --ink:#4b2e1b; --muted:#8b6a4b;
+  --blue:#5fa8e0; --blue-d:#2f6fae; --blue-l:#dff0fb;
+  --green:#5cc79d; --green-d:#2b8f6a; --gold:#f4b73e; --gold-d:#b87a14; --red:#e2574c;
+  --font-display:'Chakra Petch','Be Vietnam Pro',system-ui,sans-serif;
+  --font-body:'Be Vietnam Pro',system-ui,-apple-system,'Segoe UI',sans-serif;
+  color-scheme: light;
+}
+[hidden]{display:none !important}
+*{-webkit-tap-highlight-color:transparent}
+body{
+  background:linear-gradient(var(--sky),var(--sky2)) fixed; color:var(--ink); font-family:var(--font-body); font-size:15px; line-height:1.5;
+  padding-block:18px;
+  padding-left:max(14px, env(safe-area-inset-left, 0px));
+  padding-right:max(14px, env(safe-area-inset-right, 0px));
+}
+.wrap{max-width:960px; margin:0 auto; display:grid; gap:12px; grid-template-columns:minmax(0,1fr)}
+.wrap>*{min-width:0}
+.stats{flex-wrap:wrap}
+/* khung giấy dùng chung */
+.panel,.badge,.dialog,.stats span,.chapters button,.cs-stats div,.cs-facts,.lb-note{
+  background:var(--paper); border:3px solid var(--brown); border-radius:10px; box-shadow:inset 0 0 0 2px var(--paper2), 0 3px 0 var(--brown-d);
+}
+.top{display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:8px 16px}
+h1{font:700 clamp(20px,4.6vw,30px)/1.15 var(--font-display); margin:0; text-wrap:balance; color:var(--brown-d); text-shadow:0 2px 0 #fff8}
+.sub{margin:2px 0 0; color:var(--muted); font-size:13px}
+.stats{display:flex; gap:8px; font:700 12px var(--font-display); letter-spacing:.04em}
+.stats span{display:flex; align-items:center; gap:7px; padding:3px 12px 3px 4px; border-radius:999px; color:var(--brown)}
+.stats span::before{content:""; width:22px; height:22px; border-radius:50%; background:var(--gold); border:2px solid var(--gold-d); box-shadow:inset 0 -3px 0 #e39a1c, inset 0 2px 0 #ffe29a}
+.stats span:nth-child(2)::before{background:var(--blue); border-color:var(--blue-d); box-shadow:inset 0 -3px 0 #3c85c8, inset 0 2px 0 #b9ddf7}
+.stats b{color:var(--blue-d); font-variant-numeric:tabular-nums; font-size:14px}
+
+.stagewrap{position:relative; border:4px solid var(--brown); border-radius:12px; overflow:hidden; box-shadow:0 0 0 3px var(--paper), 0 0 0 6px var(--brown), 0 9px 0 6px var(--brown-d); background:#000; container-type:inline-size; margin:6px 6px 12px}
+canvas{display:block; width:100%; height:auto; aspect-ratio:16/9; image-rendering:crisp-edges; image-rendering:pixelated}
+
+/* biển tên khu vực: dải xanh như tab tiêu đề trong game */
+.badge{position:absolute; left:10px; top:10px; display:flex; flex-direction:column; gap:2px; padding:5px 12px 6px 10px; max-width:72%; border-radius:8px; border-left-width:8px; border-left-color:var(--blue)}
+.badge b{font:700 clamp(12px,2.5cqw,17px)/1.2 var(--font-display); color:var(--brown-d)}
+.badge span{font:600 clamp(10px,1.8cqw,13px) var(--font-display); color:var(--blue-d); letter-spacing:.03em}
+
+/* nút tương tác nổi: bong bóng kem, phím E là nút xanh ngọc */
+.prompt{position:absolute; top:52%; transform:translateX(-50%); display:flex; align-items:center; gap:8px; font:700 clamp(11px,2.1cqw,14px) var(--font-display);
+  background:var(--paper); color:var(--brown-d); border:3px solid var(--brown); border-radius:999px; padding:3px 14px 3px 4px; box-shadow:0 3px 0 var(--brown-d); cursor:pointer; white-space:nowrap}
+.prompt::after{content:""; position:absolute; left:50%; bottom:-9px; width:10px; height:10px; background:var(--paper); border:3px solid var(--brown); border-top:0; border-left:0; transform:translateX(-50%) rotate(45deg); margin-top:-5px}
+.prompt kbd{font:700 1em var(--font-display); display:grid; place-items:center; min-width:1.9em; height:1.9em; border-radius:50%; background:var(--green); color:#fff; border:2px solid var(--green-d); box-shadow:inset 0 -3px 0 var(--green-d); margin:0}
+.prompt:active{transform:translateX(-50%) translateY(2px)}
+
+.stagewrap.talking .badge{display:none}
+.dialog{position:absolute; left:10px; right:10px; top:10px; max-height:60%; overflow:auto; cursor:pointer; padding:20px 14px 8px; font-size:clamp(12px,2.1cqw,16px); line-height:1.55; color:var(--ink); border-radius:12px}
+.who{position:absolute; left:12px; top:-3px; transform:translateY(-50%); font:700 .8em var(--font-display); color:#fff; background:var(--blue); border:3px solid var(--blue-d); border-radius:999px; padding:0 12px; letter-spacing:.04em; box-shadow:0 2px 0 var(--blue-d)}
+.dialog{overflow:visible; max-height:none}
+.txt{min-height:3em}
+.chips{display:flex; flex-direction:column; gap:5px; margin:8px 0 0; padding:0; list-style:none}
+.chips li{padding:5px 10px; background:var(--blue-l); border:2px solid #a9cde8; border-radius:8px; font-size:.92em; color:var(--brown-d)}
+.next{display:block; text-align:right; color:var(--blue-d); font:700 .75em var(--font-display); letter-spacing:.06em; margin-top:6px}
+
+.intro{position:absolute; inset:0; display:grid; place-content:center; justify-items:center; gap:12px; text-align:center; padding:16px;
+  background:linear-gradient(rgba(207,230,238,.35), rgba(251,240,218,.82))}
+.intro h2{margin:0; font:700 clamp(20px,6cqw,42px)/1.1 var(--font-display); text-wrap:balance; color:var(--brown-d); text-shadow:0 2px 0 #fff9}
+.intro p{margin:0; max-width:44ch; color:var(--ink); font-size:clamp(12px,2.1cqw,16px); line-height:1.5; background:var(--paper); border:3px solid var(--brown); border-radius:10px; padding:10px 14px; box-shadow:inset 0 0 0 2px var(--paper2), 0 3px 0 var(--brown-d)}
+.btn{font:700 clamp(13px,2.4cqw,17px) var(--font-display); letter-spacing:.04em; background:var(--green); color:#fff; text-shadow:0 2px 0 var(--green-d);
+  border:3px solid var(--green-d); border-radius:999px; padding:9px 26px; box-shadow:inset 0 3px 0 #9be6c7, 0 4px 0 var(--green-d); cursor:pointer}
+.btn:active{transform:translateY(3px); box-shadow:inset 0 3px 0 #9be6c7, 0 1px 0 var(--green-d)}
+:focus-visible{outline:3px solid var(--blue); outline-offset:2px}
+
+/* thanh chặng: tab giấy kem, chặng hiện tại màu xanh */
+.chapters{display:flex; gap:8px; overflow-x:auto; padding:4px 6px 10px; scrollbar-width:thin}
+.chapters button{flex:0 0 auto; display:flex; align-items:center; gap:6px; font:700 12px var(--font-display); color:var(--brown-d); border-radius:999px; padding:3px 12px 3px 4px; cursor:pointer; white-space:nowrap}
+.chapters button.cur{background:var(--blue); border-color:var(--blue-d); color:#fff; box-shadow:inset 0 2px 0 #b9ddf7, 0 3px 0 var(--blue-d)}
+.chapters button.done::after{content:"✓"; color:var(--green-d); font-weight:700}
+.chapters button.cur.done::after{color:#d9ffee}
+.chapters .n{display:grid; place-items:center; width:20px; height:20px; border-radius:50%; background:var(--paper3); color:var(--brown-d); font-size:11px; margin:0; font-variant-numeric:tabular-nums}
+.chapters button.cur .n{background:#fff; color:var(--blue-d)}
+
+/* nút đóng / điều hướng */
+.lb-x,.lb-nav{font:700 clamp(11px,1.9cqw,14px) var(--font-display); color:#fff; background:var(--red); text-shadow:0 2px 0 #a8342b; border:3px solid #a8342b; border-radius:999px; padding:4px 14px; box-shadow:inset 0 2px 0 #f39289, 0 3px 0 #a8342b; cursor:pointer}
+.lb-x:active,.lb-nav:active{transform:translateY(2px)}
+.lb{position:absolute; inset:0; display:grid; grid-template-rows:auto 1fr auto; gap:8px; padding:10px 12px; background:rgba(74,42,22,.94); z-index:3}
+.lb-top{display:flex; justify-content:space-between; align-items:center; gap:10px; font:700 clamp(11px,1.9cqw,14px) var(--font-display); letter-spacing:.04em; color:var(--paper)}
+.lb-main{min-height:0; display:grid; grid-template-rows:minmax(0,1fr); grid-template-columns:auto 1fr auto; align-items:center; gap:8px}
+.lb-nav{width:clamp(34px,6cqw,46px); height:clamp(40px,9cqw,56px); padding:0; font-size:18px; background:var(--blue); border-color:var(--blue-d); text-shadow:0 2px 0 var(--blue-d); box-shadow:inset 0 2px 0 #b9ddf7, 0 3px 0 var(--blue-d)}
+.lb-nav:disabled{opacity:.35; cursor:default}
+.lb-frame{position:relative; min-height:0; height:100%; display:grid; place-items:center}
+.lb-frame img{position:absolute; inset:0; margin:auto; max-width:100%; max-height:100%; object-fit:contain; border:4px solid var(--paper); border-radius:6px; background:#fff; box-shadow:0 0 0 3px var(--brown); image-rendering:auto}
+.lb-note div{margin-top:6px; text-align:left}
+.lb-note{max-width:60ch; padding:16px; text-align:center; font-size:clamp(13px,2.4cqw,18px)}
+.lb-cap{text-align:center; font-size:clamp(11px,1.9cqw,15px); line-height:1.4; color:var(--paper)}
+.lb-cap small{display:block; color:var(--paper3); margin-top:2px; font-size:.85em}
+
+/* phòng triển lãm / trang dự án: giấy kem, tiêu đề nâu */
+.cs{position:absolute; inset:0; display:grid; grid-template-rows:auto minmax(0,1fr); background:var(--paper); z-index:2}
+.cs-bar{display:flex; justify-content:space-between; align-items:center; gap:10px; padding:8px 12px; background:var(--blue); border-bottom:3px solid var(--blue-d); font:700 clamp(11px,1.9cqw,14px) var(--font-display); letter-spacing:.04em; color:#fff; text-shadow:0 2px 0 var(--blue-d)}
+.cs-body{overflow:auto; padding:clamp(12px,3cqw,28px); font-size:clamp(12px,1.9cqw,15px); line-height:1.6; outline:none; scrollbar-color:var(--brown) var(--paper2); color:var(--ink)}
+.cs-body>*{max-width:900px; margin-inline:auto}
+.cs-tag{font:700 clamp(10px,1.6cqw,12px) var(--font-display); letter-spacing:.06em; text-transform:uppercase; color:var(--blue-d)}
+.cs-body h2{font:700 clamp(20px,4.4cqw,34px)/1.1 var(--font-display); margin:4px auto 8px; text-wrap:balance; color:var(--brown-d)}
+.cs-intro{color:var(--muted); margin-top:0; margin-bottom:14px; max-width:none}
+.cs-stats{display:grid; grid-template-columns:repeat(auto-fit,minmax(110px,1fr)); gap:10px; margin-bottom:8px}
+.cs-stats div{padding:8px 10px}
+.cs-stats b{display:block; font:700 clamp(18px,3.6cqw,28px) var(--font-display); color:var(--blue-d); font-variant-numeric:tabular-nums}
+.cs-stats span{font-size:.85em; color:var(--muted)}
+.cs-note{font-size:.8em; color:var(--muted); margin:4px auto 14px}
+.cs-hero{margin:12px auto}
+.cs-hero img,.cs-grid img{display:block; width:100%; height:auto; cursor:zoom-in; border:3px solid var(--brown); border-radius:8px; background:#fff; box-shadow:0 3px 0 var(--brown-d)}
+.cs-hero img:hover,.cs-grid img:hover{border-color:var(--blue-d)}
+.cs-meta{display:flex; flex-wrap:wrap; gap:6px; margin:10px auto}
+.cs-meta span{padding:2px 10px; font:700 .78em var(--font-display); letter-spacing:.03em; background:var(--blue-l); border:2px solid #a9cde8; border-radius:999px; color:var(--blue-d)}
+.cs-facts{display:grid; grid-template-columns:auto 1fr; gap:4px 14px; margin:10px auto 18px; padding:10px 14px}
+.cs-facts dt{color:var(--muted); font-size:.85em}
+.cs-facts dd{margin:0}
+.cs-sec{margin:22px auto 0; padding-top:14px; border-top:3px dashed var(--paper3)}
+.cs-sec .hd{display:flex; align-items:center; gap:10px}
+.cs-sec .hd i{display:grid; place-items:center; min-width:26px; height:26px; border-radius:50%; background:var(--gold); border:2px solid var(--gold-d); color:var(--brown-d); font:700 12px var(--font-display); font-style:normal}
+.cs-sec h3{font:700 clamp(15px,2.6cqw,21px)/1.2 var(--font-display); margin:0; color:var(--brown-d)}
+.cs-sec p{margin:6px 0 10px; color:var(--ink); max-width:none}
+.cs-grid{column-gap:12px}
+.cs-grid figure{break-inside:avoid; margin:0 0 14px}
+.cs-grid figcaption{font-size:.8em; color:var(--muted); margin-top:4px}
+.cs-grid.n1{max-width:520px; margin-inline:0}
+.cs-list{margin:10px auto 0; padding-left:20px}
+@container (max-width:560px){ .cs-grid{column-count:2 !important} .cs-grid.n1{column-count:1 !important} }
+
+/* điều khiển cảm ứng: cần trái/phải to, nút chạy bật tắt, nút tương tác tròn */
+.pad{display:none; align-items:center; justify-content:space-between; gap:10px; touch-action:none; margin:0 6px; user-select:none; -webkit-user-select:none}
+@media (pointer:coarse),(hover:none),(max-width:700px){.pad{display:flex} .desk{display:none}}
+.pad .lr{display:flex; gap:10px}
+.pad button{font:700 22px var(--font-display); color:var(--brown-d); background:var(--paper); border:3px solid var(--brown); border-radius:16px; box-shadow:inset 0 0 0 2px var(--paper2), 0 4px 0 var(--brown-d); touch-action:none; user-select:none; -webkit-user-select:none}
+.pad .lr button{width:78px; height:64px}
+.pad .lr button:active,.pad .lr button.on{background:var(--blue-l); transform:translateY(3px); box-shadow:inset 0 0 0 2px #fff, 0 1px 0 var(--brown-d)}
+.pad .mid{display:flex; flex-direction:column; align-items:center; gap:4px; font:700 11px var(--font-display); color:var(--muted)}
+.pad .run{width:64px; height:48px; font-size:13px; letter-spacing:.03em; border-radius:999px}
+.pad .run.on{background:var(--gold); border-color:var(--gold-d); color:var(--brown-d); box-shadow:inset 0 3px 0 #ffe29a, 0 4px 0 var(--gold-d)}
+.pad .act{width:78px; height:78px; border-radius:50%; background:var(--green); color:#fff; border-color:var(--green-d); text-shadow:0 2px 0 var(--green-d); font-size:12px; line-height:1.15; box-shadow:inset 0 4px 0 #9be6c7, 0 5px 0 var(--green-d)}
+.pad .act:active{transform:translateY(3px)}
+.iconbtn{width:32px; height:32px; border-radius:50%; border:3px solid var(--brown); background:var(--paper); color:var(--brown-d); font:700 16px/1 var(--font-display); cursor:pointer; box-shadow:inset 0 0 0 2px var(--paper2), 0 3px 0 var(--brown-d); padding:0}
+.iconbtn:active{transform:translateY(2px)}
+.menu{position:absolute; inset:0; display:grid; grid-template-rows:auto minmax(0,1fr); background:var(--paper); z-index:5}
+.menu-body{overflow:auto; padding:clamp(14px,3.4cqw,30px); max-width:640px; width:100%; margin-inline:auto; font-size:clamp(12px,2cqw,15px); line-height:1.6; outline:none}
+.menu-body h2{font:700 clamp(18px,4cqw,28px)/1.15 var(--font-display); margin:0; color:var(--brown-d)}
+.menu-body h3{font:700 clamp(13px,2.4cqw,17px) var(--font-display); margin:16px 0 4px; color:var(--blue-d)}
+.menu-role{margin:2px 0 10px; color:var(--muted)}
+.menu-note{color:var(--muted); font-size:.85em}
+.menu-keys{display:grid; grid-template-columns:auto 1fr; gap:6px 12px; margin:0}
+.menu-keys dt{font-weight:700; color:var(--brown-d)} .menu-keys dd{margin:0}
+.menu-body kbd{font:700 .85em var(--font-display); background:#fff; border:2px solid var(--brown); border-radius:5px; padding:0 5px; color:var(--brown-d)}
+.set{display:grid; grid-template-columns:minmax(90px,150px) 1fr 3.2em; align-items:center; gap:10px; margin:12px 0}
+.set label{font-weight:700; color:var(--brown-d)} .set output{font:700 .9em var(--font-display); color:var(--blue-d); text-align:right}
+.set input[type=range]{width:100%; accent-color:var(--blue-d); height:28px}
+.chk{display:flex; align-items:center; gap:8px; margin:12px 0; font-weight:600; color:var(--brown-d)}
+.chk input{width:20px; height:20px; accent-color:var(--green-d)}
+.menu-btns{margin:14px 0}
+.btn.small{font-size:13px; padding:6px 18px}
+.hint{margin:0 6px; color:var(--muted); font-size:12px; text-align:center}
+.hint kbd{font:700 11px var(--font-display); background:var(--paper); border:2px solid var(--brown); border-radius:5px; padding:0 5px; color:var(--brown-d)}
+.mg{position:absolute; inset:0; background:#000; z-index:20} .mg[hidden]{display:none}
+.mg canvas{width:100%; height:100%; aspect-ratio:auto; touch-action:none; cursor:pointer}
+.mg .lb-x{position:absolute; right:8px; top:8px}
+.ask{position:absolute; left:10px; right:10px; bottom:10px; z-index:15; padding:18px 14px 10px; background:var(--paper); border:3px solid var(--brown); border-radius:12px; box-shadow:inset 0 0 0 2px var(--paper2), 0 3px 0 var(--brown-d); font-size:clamp(12px,2.1cqw,16px); color:var(--ink)}
+.ask[hidden],.toast[hidden]{display:none}
+.ask::before{content:"Mini-game"; position:absolute; left:12px; top:-3px; transform:translateY(-50%); font:700 .8em var(--font-display); color:#fff; background:var(--gold); border:3px solid var(--gold-d); border-radius:999px; padding:0 12px; letter-spacing:.04em; text-shadow:0 1px 0 var(--gold-d)}
+.ask p{margin:0 0 10px} .askb{display:flex; gap:10px; justify-content:flex-end}
+.btn.ghost{background:var(--paper); color:var(--brown-d); text-shadow:none; border-color:var(--brown); box-shadow:inset 0 0 0 2px var(--paper2), 0 3px 0 var(--brown-d)}
+.toast{position:absolute; left:50%; top:12px; transform:translateX(-50%); z-index:30; max-width:90%; text-align:center; font:700 clamp(11px,2.1cqw,15px) var(--font-display); color:var(--brown-d); background:var(--gold); border:3px solid var(--gold-d); border-radius:999px; padding:5px 16px; box-shadow:0 3px 0 var(--gold-d)}
+.toast.show{animation:tin .35s ease-out}
+@keyframes tin{from{transform:translate(-50%,-14px); opacity:0} to{transform:translate(-50%,0); opacity:1}}
+.stats .bdgBtn{display:flex; align-items:center; gap:7px; padding:3px 12px 3px 4px; border-radius:999px; font:inherit; color:var(--brown); background:var(--paper); border:3px solid var(--brown); box-shadow:inset 0 0 0 2px var(--paper2), 0 3px 0 var(--brown-d); cursor:pointer}
+.stats .bdgBtn::before{content:""; width:22px; height:22px; border-radius:50%; background:var(--green); border:2px solid var(--green-d); box-shadow:inset 0 -3px 0 #3ea87f, inset 0 2px 0 #bff0dc}
+.bk{display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin:12px 0} .bk figure{margin:0; text-align:center} .bk img{width:100%; max-width:110px; height:auto; image-rendering:auto}
+.bk figure:not(.on) img{opacity:.85} .bk b{display:block; font:700 .95em var(--font-display); color:var(--brown-d)} .bk small{display:block; font-size:.75em; color:var(--muted); line-height:1.3}
+@media (max-width:520px){ .bk{grid-template-columns:repeat(2,1fr)} }
+
+.fsbtn{position:absolute; right:8px; top:8px; z-index:5; width:34px; height:34px; border-radius:10px; border:3px solid var(--brown); background:var(--paper); color:var(--brown-d); font:700 17px/1 var(--font-display); cursor:pointer; box-shadow:inset 0 0 0 2px var(--paper2), 0 3px 0 var(--brown-d); padding:0; opacity:.92}
+.mg .fsbtn{z-index:21; right:104px}
+.rothint{position:absolute; left:50%; bottom:10px; transform:translateX(-50%); z-index:22; max-width:92%; padding:7px 12px; border-radius:999px; background:var(--paper); color:var(--brown-d); border:3px solid var(--brown); font:700 12px/1.3 var(--font-display); text-align:center; box-shadow:0 3px 0 var(--brown-d); pointer-events:none}
+.mg canvas{object-fit:contain}
+.stagewrap.fs{position:fixed !important; inset:0 !important; width:100% !important; height:100% !important; margin:0 !important; border:0 !important; border-radius:0 !important; box-shadow:none !important; z-index:9999; background:#000}
+.stagewrap.fs>canvas#cv{position:absolute; inset:0; width:100%; height:100%; aspect-ratio:auto; object-fit:contain}
+.stagewrap.fs.rot{inset:auto !important; top:0 !important; left:100% !important; width:100vh !important; height:100vw !important; transform-origin:0 0; transform:rotate(90deg)}
+@supports (height:100dvh){ .stagewrap.fs.rot{width:100dvh !important; height:100dvw !important} }
+.stagewrap.fs .pad{display:none}
+.stagewrap.fs .ask{bottom:76px}
+@media (pointer:coarse),(hover:none){ .stagewrap.fs .pad{display:flex; position:absolute; left:10px; right:10px; bottom:10px; z-index:24; margin:0; pointer-events:none} .stagewrap.fs .pad>*{pointer-events:auto} .stagewrap.fs .pad button{opacity:.8} .stagewrap.fs.gm .pad{display:none} }
+</style>
+
+<main class="wrap">
+  <header class="top">
+    <div>
+      <h1 id="gTitle">Hành trình sự nghiệp</h1>
+      <p class="sub" id="gSub"></p>
+    </div>
+    <div class="stats"><span>Điểm đến <b id="stV">0/0</b></span><span>Dự án <b id="stW">0/0</b></span><button type="button" class="bdgBtn" id="bdgBtn" aria-label="Sổ huy hiệu">Huy hiệu <b id="stB">0/6</b></button><button type="button" class="iconbtn" id="setBtn" aria-label="Cài đặt âm thanh" title="Cài đặt">&#9881;</button><button type="button" class="iconbtn" id="aboutBtn" aria-label="Giới thiệu" title="Giới thiệu">i</button></div>
+  </header>
+
+  <div class="stagewrap" id="stage">
+    <canvas id="cv" width="640" height="360" aria-label="Trò chơi đi cảnh kể lại hành trình sự nghiệp"></canvas>
+    <div class="badge"><b id="zName"></b><span id="zYears"></span></div>
+    <button class="prompt" id="prompt" type="button" hidden><kbd>E</kbd><span id="promptTxt"></span></button>
+    <div class="dialog" id="dialog" hidden>
+      <div class="who" id="who"></div>
+      <div class="txt" id="txt"></div>
+      <ul class="chips" id="chips" hidden></ul>
+      <span class="next" id="next"></span>
+    </div>
+    <div class="cs" id="cs" hidden role="dialog" aria-label="Xem dự án">
+      <div class="cs-bar"><span id="csRoom"></span><button class="lb-x" id="csX" type="button">Đóng · Esc</button></div>
+      <div class="cs-body" id="csBody" tabindex="0"></div>
+    </div>
+    <div class="menu" id="menu" hidden role="dialog" aria-label="Cài đặt và giới thiệu">
+      <div class="cs-bar"><span id="menuT"></span><button class="lb-x" id="menuX" type="button">Đóng · Esc</button></div>
+      <div class="menu-body" id="menuBody" tabindex="0"></div>
+    </div>
+    <button type="button" class="fsbtn" id="fsBtn" aria-label="Toàn màn hình" title="Toàn màn hình">⛶</button>
+    <div class="mg" id="mg" hidden><canvas id="mgc" width="640" height="360" aria-label="Mini-game"></canvas><div class="rothint" id="rotHint" hidden>↻ Xoay ngang điện thoại hoặc bấm ⛶ để chơi rộng hơn</div><button class="lb-x" id="mgX" type="button">Thoát · Esc</button><button type="button" class="fsbtn" id="mgFs" aria-label="Toàn màn hình">⛶</button></div>
+    <div class="ask" id="ask" hidden><p id="askT"></p><div class="askb"><button type="button" class="btn small ghost" id="askN">Để sau</button><button type="button" class="btn small" id="askY">Chơi thử</button></div></div>
+    <div class="toast" id="toast" hidden></div>
+    <div class="lb" id="lb" hidden role="dialog" aria-label="Xem ảnh lớn">
+      <div class="lb-top"><span id="lbRoom"></span><button class="lb-x" id="lbX" type="button">Đóng · Esc</button></div>
+      <div class="lb-main">
+        <button class="lb-nav" id="lbP" type="button" aria-label="Ảnh trước">◀</button>
+        <div class="lb-frame"><img id="lbImg" alt="" hidden><div class="lb-note" id="lbNote" hidden></div></div>
+        <button class="lb-nav" id="lbN" type="button" aria-label="Ảnh sau">▶</button>
+      </div>
+      <div class="lb-cap"><b id="lbT"></b><small id="lbD"></small></div>
+    </div>
+    <div class="intro" id="intro">
+      <h2 id="iTitle"></h2>
+      <p id="iText"></p>
+      <button class="btn" id="startBtn" type="button">Bắt đầu hành trình</button>
+    </div>
+  </div>
+
+  <nav class="chapters" id="chapters" aria-label="Nhảy tới từng chặng"></nav>
+
+  <div class="pad" id="pad">
+    <div class="lr"><button type="button" data-k="l" aria-label="Đi trái">◀</button><button type="button" data-k="r" aria-label="Đi phải">▶</button></div>
+    <div class="mid"><button type="button" class="run" id="runBtn" aria-pressed="false">CHẠY</button></div>
+    <button type="button" class="act" id="actBtn">Tương tác</button>
+  </div>
+  <p class="hint desk"><kbd>←</kbd> <kbd>→</kbd> hoặc <kbd>A</kbd> <kbd>D</kbd> để đi · giữ <kbd>Shift</kbd> để chạy · <kbd>E</kbd> hoặc <kbd>Space</kbd> để tương tác · cuộn để xem dự án, bấm ảnh để phóng to · <kbd>Esc</kbd> để đóng</p>
+</main>
+
+<script>
+(function(){
+'use strict';
+
+/* ============ NỘI DUNG: sửa phần này để đổi thông tin ============
+   "✎" đánh dấu chỗ còn trống, thay bằng thông tin thật của bạn.
+   {name} sẽ tự đổi thành tên trong CONFIG.name. */
+const CONFIG = {
+  name: 'Lý Huỳnh Long',
+  role: 'Graphic Designer · Employer Branding · Truyền thông tuyển dụng',
+  intro: 'Đi từ giảng đường đến ngân hàng, qua 6 chặng. Ghé từng điểm đến, nói chuyện với người dân rồi bước vào bên trong tòa nhà để xem triển lãm sản phẩm.',
+  zones: [
+    { short:'Trường', name:'ĐH Văn hóa TP.HCM', years:'2019 – 2023 · Ngành Truyền thông', type:'school', color:'#c0392b',
+      npc:{ name:'Cô giáo khoa Truyền thông', shirt:'#e8738a', hair:'#3b2a20', lines:[
+        'Chào mừng đến Đại học Văn hóa TP.HCM! Đây là điểm bắt đầu hành trình của {name}.',
+        'Ngành Truyền thông, khóa 2019 – 2023. Vừa học vừa tham gia hoạt động Đoàn – Hội.',
+        'Ngay trong lúc đi học, bạn ấy đã đi làm thêm. Ghé phòng truyền thống ở sau cánh cửa kia, rồi đi tiếp nhé!' ] },
+      chest:{ title:'Thành tích thời sinh viên', items:[
+        'Sinh viên 5 Tốt cấp Trường và cấp Thành phố (2021, 2022)',
+        'Sinh viên xuất sắc về học tập và rèn luyện 2022',
+        'Cán bộ Đoàn tiêu biểu 2021',
+        'Chứng chỉ tiếng Anh B1' ] } },
+    { short:'English Time', name:'English Time School', years:'2020 – 2022 · Part-time', type:'english', color:'#e67e22',
+      npc:{ name:'Cô chủ trung tâm', shirt:'#4aa3a0', hair:'#2a2233', lines:[
+        'English Time là nơi {name} đi làm part-time, song song với việc học đại học.',
+        'Bạn ấy làm Graphic Designer & Digital Marketing: hình ảnh fanpage, banner và ấn phẩm sự kiện để gia tăng nhận diện thương hiệu.' ] },
+      chest:{ title:'Điểm nhấn ở chặng này', items:[
+        'Làm việc song song với lịch học đại học',
+        'Hình ảnh fanpage, banner và ấn phẩm sự kiện',
+        'Vị trí Graphic Designer & Digital Marketing' ] } },
+    { short:'Galaxy · Happy Book', name:'Galaxy Group · Happy Book', years:'2022 – 08/2023 · Full-time', type:'publisher', color:'#f2a93b',
+      npc:{ name:'Chị trưởng dự án', shirt:'#7a6ad8', hair:'#1d1b2e', lines:[
+        'Tại Galaxy Group, {name} làm full-time vị trí Graphic Designer & Digital Marketing.',
+        'Công việc gồm thiết kế đồ họa, banner Facebook Ads, Google Ads và nội dung truyền thông số cho các dự án sản phẩm mới.',
+        'Đây là bước chuyển từ làm thêm sang công việc chính thức, ngay trong năm cuối đại học.' ] },
+      chest:{ title:'Điểm nhấn ở chặng này', items:[
+        'Dự án Happy Book (Galaxy Group)',
+        'Banner Facebook Ads, Google Ads và nội dung truyền thông số',
+        'Poster, banner, logo cho nhiều nhãn hàng ở những năm đầu' ] } },
+    { short:'PNJ', name:'Freelance · PNJ', years:'2022 – 2025 · Freelance', type:'jewelry', color:'#c9a24a',
+      npc:{ name:'Nhân viên cửa hàng', shirt:'#2f3f6b', hair:'#2a1a14', lines:[
+        'Song song với công việc chính, {name} nhận freelance thiết kế cho PNJ.',
+        'Poster, social, banner và ấn phẩm in cho các mùa mua sắm: Style by PNJ, Tết, 8/3, 20/10 và nhiều chiến dịch khác.' ] },
+      chest:{ title:'Điểm nhấn ở chặng này', items:[
+        'Poster, social, banner cho các mùa mua sắm của PNJ',
+        'Ấn phẩm in: phong bì, phiếu ưu đãi',
+        'Hợp tác lâu dài, từ 2022 đến 2025' ] } },
+    { short:'ACB · Workplace', name:'ACB · Workplace Branding', years:'09/2024 – 12/2025', type:'bank', color:'#1f6fb5',
+      npc:{ name:'Anh bảo vệ tòa nhà', shirt:'#34495e', hair:'#222', lines:[
+        'Từ 09/2024, {name} làm tại Trung tâm học tập của Ngân hàng Á Châu (ACB), mảng Media – Workplace Branding.',
+        'Bạn ấy thiết kế nội dung đào tạo, văn hóa doanh nghiệp, các hoạt động nội bộ và bài đăng ngày lễ.',
+        'Ngoài ra còn hỗ trợ quay chụp và dựng video recap.' ] },
+      chest:{ title:'Điểm nhấn ở chặng này', items:[
+        'Nội dung đào tạo, văn hóa và Workplace Branding',
+        'Chuỗi #ACBTalentEcosystem và bài đăng ngày lễ',
+        'Cùng nhóm xây dựng nội dung và thiết kế slide giải HR Asia của ACB',
+        'Hỗ trợ quay chụp, dựng video recap' ] } },
+    { short:'Saigon Co.op', name:'Freelance · Saigon Co.op', years:'2026 · Freelance', type:'market', color:'#1f9d55',
+      npc:{ name:'Cô bán hàng', shirt:'#e5a23a', hair:'#3b2a20', lines:[
+        'Trong lúc làm ở ACB, {name} nhận freelance thiết kế cho Saigon Co.op.',
+        'Chiến dịch lần này là "Chuyến Xe Hạnh Phúc" 2026: key visual, chuỗi bài đếm ngược đăng ký vé xe và bài đăng trên fanpage Co.opmart.' ] },
+      chest:{ title:'Điểm nhấn ở chặng này', items:[
+        'Key visual Chuyến Xe Hạnh Phúc 2026',
+        'Chuỗi bài đếm ngược đăng ký vé xe 0 đồng',
+        'Bài đăng trên fanpage Co.opmart' ] } },
+    { short:'ACB · Tuyển dụng', name:'ACB · Truyền thông tuyển dụng', years:'12/2025 – nay', type:'bank2', color:'#1f6fb5',
+      npc:{ name:'Chị nhóm tuyển dụng', shirt:'#d9485f', hair:'#1d1b2e', lines:[
+        'Từ 12/2025 đến nay, {name} chuyển về hội sở ACB, làm truyền thông tuyển dụng: concept, key visual, ấn phẩm, mạng xã hội và website cho các chiến dịch tuyển dụng, kể cả các sự kiện tuyển dụng.',
+        'Chiến dịch The Next Banker 2026 tuyển sinh viên năm cuối, nhận 2.057 hồ sơ. Bạn ấy là người thiết kế chính.',
+        'Bạn ấy còn hỗ trợ xây dựng và vận hành cổng tương tác cho các bạn tham gia: tin tức, check-in, mini game.' ] },
+      chest:{ title:'Điểm nhấn ở chặng này', items:[
+        'Thiết kế chính chiến dịch The Next Banker 2026 (2.057 hồ sơ)',
+        'Hỗ trợ xây dựng và vận hành cổng tương tác cho người tham gia',
+        'Ứng dụng nhận diện cho sự kiện: sân khấu, backdrop, standee, ấn phẩm' ] } }
+  ],
+  ending: {
+    text: 'Hành trình còn tiếp và chặng kế tiếp vẫn đang để trống. Nếu bạn muốn viết tiếp cùng {name}, hãy liên hệ:',
+    contacts: [ 'Email: lyhuynh.long0901@gmail.com', 'Portfolio: renows.github.io/portfolio' ]
+  }
+};
+const GAL=[
+ { title:'Phòng truyền thống', works:[
+   { t:'Thành tích thời sinh viên', tag:'ĐH Văn hóa TP.HCM · 2019 – 2023', intro:'Cử nhân Truyền thông, vừa học vừa đi làm thêm và tham gia hoạt động Đoàn – Hội.',
+     list:['Sinh viên 5 Tốt cấp Trường và cấp Thành phố (2021, 2022)','Sinh viên xuất sắc về học tập và rèn luyện 2022','Cán bộ Đoàn tiêu biểu 2021','Chứng chỉ tiếng Anh B1'] } ] },
+ { title:'Phòng trưng bày English Time', works:[
+   { t:'English Time School', tag:'2020 – 2022 · Graphic Designer & Digital Marketing', cover:'earlier_et-hoi-thao',
+     intro:'Hình ảnh fanpage, banner và ấn phẩm sự kiện phục vụ truyền thông, gia tăng nhận diện thương hiệu.', tags:['Fanpage','Banner','Ấn phẩm sự kiện'],
+     sections:[ { h:'Poster và banner', imgs:[['earlier_et-hoi-thao','Hội thao English Time'],['earlier_et-vna','Khóa đào tạo tiếp viên hàng không Vietnam Airlines'],['earlier_et-tuyen-dung','Tuyển dụng giáo viên tiếng Anh']] } ] } ] },
+ { title:'Phòng trưng bày những năm đầu', works:[
+   { t:'Những năm đầu', tag:'Galaxy Group · Casso × OCB · 2022 – 08/2023', cover:'earlier_hp-envy',
+     intro:'Poster, banner, landing page và logo từ những năm đầu: Galaxy Group, Casso × OCB và một số nhãn hàng khác.', tags:['Banner Ads','Landing page','Poster','Logo'],
+     sections:[
+       { h:'Galaxy Group · Happy Book', p:'Thiết kế đồ họa, banner Facebook Ads, Google Ads và nội dung truyền thông số cho các dự án sản phẩm mới.',
+         imgs:[['earlier_hb-landing','Landing page Happy Book giảm 30%'],['earlier_hp-envy','Poster HP Envy x360'],['earlier_shopee-xiaomi','Shopee × Xiaomi 6.6'],['earlier_so-vo-league','Sơ Vợ League 2023'],['earlier_mang-nang-logo','Mang nắng về bên em · Logo']] },
+       { h:'Casso × OCB', imgs:[['earlier_casso-2','Banner Casso × OCB giảm 50% phí Casso']] } ] } ] },
+ { title:'Phòng trưng bày PNJ', works:[
+   { t:'Hình ảnh cho các mùa mua sắm', tag:'Freelance · PNJ · 2022 – 2025', cover:'pnj_cover',
+     intro:'Social, poster, banner ưu đãi, ấn phẩm in và key visual theo mùa: Hành trình Trang sức xuyên Việt, Style by PNJ, Disney × PNJ, Tết và các dịp lễ.', tags:['Social','Poster','Banner','Ấn phẩm in','Seasonal campaign'],
+     facts:[['Vai trò','Freelance Graphic Designer'],['Khách hàng','PNJ · Style by PNJ'],['Phạm vi','Social · Poster · Banner · Ấn phẩm in']],
+     sections:[
+       { h:'Bài toán và cách làm', p:'Nhiều chiến dịch theo mùa và dịp lễ, mỗi chiến dịch một màu riêng nhưng vẫn phải nhận ra là PNJ. Đổi bảng màu theo từng chiến dịch, như navy và vàng, hồng và vàng, tông Tết, nhưng vẫn giữ nhận diện của PNJ.' },
+       { n:'01', h:'Poster theo từng chiến dịch', p:'Xanh navy và vàng cho Hành trình Trang sức xuyên Việt; hồng và vàng trẻ hơn cho Style by PNJ.',
+         imgs:[['pnj_hanh-trinh','Hành trình Trang sức xuyên Việt'],['pnj_style','Style by PNJ · Mùa lễ hội'],['pnj_sun-lover','Style by PNJ · Sun Lover'],['pnj_style-bat-khi-chat','Style by PNJ · Bật khí chất riêng'],['pnj_nguoi-ban-vang','Người Bạn Vàng']] },
+       { n:'02', h:'Bài đăng mạng xã hội', p:'Sự kiện biểu diễn âm nhạc, trải nghiệm thương hiệu, ngày 20/10 và các bộ sưu tập mới.',
+         imgs:[['pnj_tang-phuc','Tăng Phúc · Biểu diễn âm nhạc'],['pnj_noo','Noo Phước Thịnh · Biểu diễn âm nhạc'],['pnj_dyson','Trải nghiệm Dyson'],['pnj_tran-trong','Trân trọng sẻ chia · 20/10'],['pnj_family-infinity','Family Infinity'],['pnj_deo-trang-suc','Đeo trang sức cho người thân']] },
+       { n:'03', h:'Banner ưu đãi', p:'Banner website theo chương trình Disney × PNJ, Tết và Trân trọng sẻ chia.',
+         imgs:[['pnj_disney','Disney × PNJ'],['pnj_tet-kv','Tết · Quý như Vàng'],['pnj_tran-trong-ngang','Trân trọng sẻ chia · Banner']] },
+       { n:'04', h:'Ấn phẩm in', p:'Phiếu ưu đãi và phong bì chúc mừng 8/3.',
+         imgs:[['pnj_phieu-uu-dai','Phiếu ưu đãi · 8/3'],['pnj_phong-bi-8-3','Phong bì · 8/3']] } ] } ] },
+ { title:'Phòng trưng bày Workplace Branding', works:[
+   { t:'Leadership Summit 2025', tag:'Case study · ACB · 2025 · Operational Mastery', cover:'ls25_event-overview',
+     intro:'Key visual và ấn phẩm Leadership Summit 2025: email, thư mời, backdrop, màn hình LED, thẻ tên.', tags:['Key visual','Event branding','Digital','Email','POSM','On-site'],
+     facts:[['Chương trình','ACB Leadership Summit'],['Chủ đề','Operational Mastery for Customer Experience'],['Thời gian','15–16.05.2025'],['Địa điểm','JW Marriott Hotel & Suites Saigon'],['Phạm vi','Digital · Email · POSM']],
+     sections:[
+       { h:'Khối cầu cơ khí cho chủ đề vận hành', p:'Khối cầu cơ khí tượng trưng cho nhiều bộ phận vận hành ăn khớp để tạo trải nghiệm khách hàng; đen, chrome và vàng giữ vẻ trang trọng. Nguyên tắc: giữ chung, chỉnh riêng. Cùng kiểu chữ, màu và hình ảnh; mỗi ấn phẩm chỉnh theo khoảng cách nhìn.' },
+       { n:'01', h:'Backdrop và màn hình LED', p:'Backdrop, màn hình LED và bảng chỉ dẫn thiết kế cùng nhau để nhìn là nhận ra cùng một sự kiện.',
+         imgs:[['ls25_event-overview','Toàn cảnh sự kiện'],['ls25_stage-speaker','Main stage · LED content'],['ls25_wayfinding','Wayfinding']] },
+       { n:'02', h:'Save the date, thư mời, agenda, chứng nhận', p:'Các thiết kế dọc đặt chung một artboard để kiểm tra bố cục.',
+         imgs:[['ls25_save-the-date','Save the date'],['ls25_email-invitation','Email invitation'],['ls25_agenda','Agenda'],['ls25_certificate','Certificate'],['ls25_responsive-mockup','Landing page'],['ls25_social-mockup','Social']] },
+       { n:'03', h:'Thẻ tên khách mời', p:'Thẻ tên dùng khối cầu của key visual, nhưng tên khách và đơn vị vẫn đọc nhanh.',
+         imgs:[['ls25_attendee-badges','Attendee badges']] } ] },
+   { t:'Workplace branding', tag:'ACB · 2024 – 2025', cover:'workplace_cover',
+     intro:'Hoạt động nội bộ, chuỗi #ACBTalentEcosystem và bài đăng ngày lễ. Giải HR Asia là giải chung của ACB; nhóm tôi xây dựng nội dung và thiết kế slide trình bày.', tags:['Workplace','Social','Ngày lễ','Recap'],
+     sections:[ { h:'Bài đăng và hoạt động nội bộ', imgs:[['workplace_hr-asia-award','HR Asia Awards'],['workplace_acb-games-pickleball','ACB Games · Pickleball'],['workplace_quote-ngan-dieu-thuong','Talent Ecosystem · Thông điệp'],['workplace_quote-du-an-phu-hop','Talent Ecosystem · Nhân sự'],['workplace_ngay-hanh-phuc','Ngày Hạnh phúc'],['social_quoc-khanh-2025','Quốc khánh 2025'],['workplace_trung-thu','Trung Thu'],['workplace_tet-2026','Tết 2026']] } ] },
+   { t:'Email truyền thông nội bộ', tag:'ACB · 2025 – 2026', cover:'workplace_email-prm',
+     intro:'Email của Khối Quản trị Nguồn nhân lực gửi nhân viên ACB: tuyển dụng PRM, lương thưởng dịp Tết và ngày 8/3.', tags:['Email design','Nội bộ'],
+     sections:[ { h:'Ba mẫu email', imgs:[['workplace_email-prm','Tuyển dụng · PRM'],['workplace_email-tet-2026','Lương thưởng · Tết 2026'],['workplace_email-8-3','Ngày Quốc tế Phụ nữ 8/3']] } ] },
+   { t:'Câu chuyện của ACB', tag:'ACB · acbjobs.com.vn · 2026', cover:'news_cover',
+     intro:'Banner bài viết về ACB và sự kiện ACB trên trang tin tuyển dụng.', tags:['Banner','Employer branding'],
+     sections:[ { h:'Banner bài viết', imgs:[['news_new-york','Từ Việt Nam đến New York'],['news_forbes-tu-tien-phat','Tổng Giám đốc ACB Từ Tiến Phát'],['news_di-san-nha-sang-lap','Di sản nhà sáng lập ACB'],['news_ueh-hoc-bong','ACB và UEH · Học bổng ACB – Trần Mộng Hùng'],['news_acbjobs-news-grid','acbjobs.com.vn · Câu chuyện của ACB']] } ] } ] },
+ { title:'Phòng trưng bày Chuyến Xe Hạnh Phúc', works:[
+   { t:'Chuyến Xe Hạnh Phúc', tag:'Saigon Co.op · Freelance · 2026', cover:'xhp_cover',
+     intro:'Key visual, chuỗi bài đếm ngược đăng ký vé xe và bài đăng trên fanpage Co.opmart.', tags:['Key visual','Social','Fanpage'],
+     sections:[
+       { n:'01', h:'Key visual', imgs:[['xhp_kv','Key visual · Chuyến Xe Hạnh Phúc 2026']] },
+       { n:'02', h:'Chuỗi bài đếm ngược đăng ký vé xe', imgs:[['xhp_thong-tin-khoi-hanh','Thông tin khởi hành'],['xhp_con-3-ngay','Chỉ còn 3 ngày'],['xhp_khoi-hanh-1-ngay','Chỉ còn 1 ngày · Khởi hành']] },
+       { n:'03', h:'Bài đăng fanpage Co.opmart', imgs:[['xhp_mascot-4-anh','Linh vật & bà con'],['xhp_nguoi-lao-dong-5-anh','Chân dung & lời kể']] } ] } ] },
+ { title:'Phòng trưng bày Event Branding', works:[
+   { t:'The Next Banker 2026', tag:'Case study · ACB · 05/2026 – hiện tại', cover:'tnb_kv-main',
+     intro:'Chiến dịch tuyển dụng của ACB cho sinh viên năm cuối: “Trưởng thành từ bản sắc”. Tôi làm key visual, ấn phẩm sự kiện, mạng xã hội và layout website.',
+     tags:['Key visual','Identity system','Event & print','Social','Landing page','Cổng tương tác'],
+     stats:[['2.057','Hồ sơ ứng tuyển'],['307','Bạn tham gia thực tế'],['7','Trường có hoạt động'],['5.234','Lượt sinh viên tiếp cận']],
+     note:'Số liệu đến 10/2026. Hồ sơ và số bạn tham gia là hai đợt T06 và T09; hoạt động và lượt sinh viên thuộc Campus Attraction 2026.',
+     facts:[['Phạm vi','Campaign identity · Event & print · Social · Recruitment website UI'],['Thời gian','05/2026 — Hiện tại'],['Công cụ','Photoshop · Illustrator']],
+     sections:[
+       { h:'Bài toán và cách làm', p:'Tuyển sinh viên năm cuối với thông điệp “Trưởng thành từ bản sắc”, cần một hình ảnh nhận ra ngay ở trường học, trên mạng xã hội và trên trang tuyển dụng. Một bộ nhận diện xanh electric blue và xanh lime, hình khối bo tròn, chữ đậm, dùng chung cho web, ấn phẩm sự kiện và social.' },
+       { n:'01', h:'Key visual và bộ nhận diện', imgs:[['tnb_kv-main','Key visual · Grow As You Are'],['tnb_identity','Logo system · Color palette']] },
+       { n:'02', h:'Ấn phẩm tại sự kiện ở trường đại học', p:'Backdrop và standee tại các buổi giao lưu ở trường đại học; ảnh chụp thực tế tại sự kiện.',
+         imgs:[['tnb_backdrop-01','Backdrop · Đồ họa sự kiện'],['tnb_standee-01','Standee · Mẫu 01'],['tnb_event-01','Event touchpoint · 01'],['tnb_event-02','Event touchpoint · 02']] },
+       { n:'03', h:'Layout trang đăng ký tuyển dụng', p:'Chia thành các khối ngắn, chữ lớn, thẻ bo tròn để đọc lướt vẫn hiểu. Nội dung do nhóm chốt trước; tôi lên layout desktop và mobile.',
+         imgs:[['tnb_landing-hero','Hero & proof points · Desktop'],['tnb_landing-timeline','Recruitment timeline'],['tnb_landing-why','Why join'],['tnb_landing-mobile','Mobile reading']] },
+       { n:'04', h:'Social và ngày hội việc làm', p:'Sáu bài đăng và banner chính; ảnh ngày hội việc làm UEH, NEU, R*CB@ACB.',
+         imgs:[['social_dang-ky-2027','Mở đăng ký · 01.2027'],['social_qa','Q&A'],['social_ufm-ready','UFM · READY'],['social_uel-career-expo','UEL Career Expo'],['social_ueh-see-banking','ACB Experience × UEH'],['social_dhmo-experience','ACB Experience × ĐH Mở'],['social_rcb-grid','R*CB@ACB'],['social_ueh-fair-1','UEH Career Fair'],['social_ueh-fair-2','UEH Career Fair'],['social_ueh-fair-3','UEH Career Fair'],['social_ueh-fair-4','UEH Career Fair'],['social_ueh-fair-5','UEH Career Fair'],['social_neu-1','NEU Career Fair'],['social_neu-2','NEU Career Fair'],['social_neu-3','NEU Career Fair'],['social_neu-4','NEU Career Fair'],['social_neu-5','NEU Career Fair']] },
+       { n:'05', h:'Cổng tương tác cho các bạn tham gia', p:'Nơi các bạn TNB xem tin tức, lịch sự kiện, check-in hằng ngày và theo dõi kết quả. Cổng gồm tin tức, sự kiện và lịch học, vườn cây check-in, mini game, tra cứu BSC và KPI cá nhân. Phần tôi làm: cùng nhóm lên ý tưởng và chốt hướng đi, thực hiện web cùng các thành viên, thiết kế giao diện, vận hành và theo dõi.',
+         imgs:[['tnb_portal-apps','Các ứng dụng trong cổng'],['tnb_portal-news','Tin tức TNB'],['tnb_portal-garden','Vườn cây · Check-in hằng ngày'],['tnb_portal-game','Mini game · TNB Fly']] } ] },
+   { t:'Đối tác sự nghiệp', tag:'Case study · ACB · Chương trình tuyển dụng · Làm cùng nhóm', cover:'doitac_cover',
+     intro:'Chương trình tuyển dụng chính của ACB, làm cùng cả nhóm; tôi tham gia phần thiết kế. Thông điệp Grow You : Grow Us đi xuyên suốt key visual, bài đăng và landing page trên acbjobs.com.vn.', tags:['Campaign','Key visual','Social','Landing page'],
+     facts:[['Phạm vi','Campaign · Key visual · Social · Landing page'],['Vai trò','Thành viên nhóm thiết kế, làm cùng nhóm'],['Website','acbjobs.com.vn/pages/doi-tac-su-nghiep']],
+     sections:[
+       { n:'01', h:'Key visual và bài đăng', p:'Key visual và bài đăng giới thiệu vị trí tuyển dụng trên website và mạng xã hội.',
+         imgs:[['social_doi-tac-su-nghiep-tablet','Story'],['social_doi-tac-su-nghiep-poster','Poster'],['social_doi-tac-hcb','HCB'],['social_doi-tac-cbl','CBL'],['social_doi-tac-grow','Grow You : Grow Us']] },
+       { n:'02', h:'Trang chương trình trên acbjobs.com.vn', p:'Các khối chính: Grow You : Grow Us, hướng đi nghề nghiệp, vị trí tuyển dụng, quy trình ứng tuyển. Nội dung do nhóm chốt trước; tôi lên layout và quy tắc trình bày.',
+         imgs:[['doitac_landing-hero','Đầu trang · Banner & giá trị'],['doitac_landing-journey','Hướng đi & điểm bắt đầu'],['doitac_landing-jobs','Vị trí đang tuyển'],['doitac_landing-process','Quy trình ứng tuyển'],['doitac_landing-culture','Văn hóa Work:Live:Learn@ACB']] } ] },
+   { t:'Leadership Summit 2026', tag:'Case study · ACB · 2026 · How to Be Bold', cover:'ls26_hero',
+     intro:'Key visual và ấn phẩm Leadership Summit 2026, lấy ngọn hải đăng làm trung tâm. Tôi phụ trách toàn bộ thiết kế: key visual, email, mạng xã hội và sân khấu.', tags:['Campaign identity','Key visual','Event branding','Email','Social'],
+     facts:[['Chương trình','ACB Leadership Summit 2026'],['Chủ đề','How to Be Bold — Leadership in Turbulent Times'],['Thời gian','18–19.05.2026'],['Địa điểm','Sheraton Saigon Grand Opera'],['Diễn giả','HBS Professor Ranjay Gulati'],['Phạm vi','Key visual · Email · Social · Event']],
+     sections:[
+       { h:'Ngọn hải đăng giữa biển động', p:'Chủ đề How to Be Bold in Turbulent Times, nên chọn ngọn hải đăng: một điểm sáng đứng vững giữa sóng lớn. “Bold” ở đây là sự kiên định có kỷ luật, không liều lĩnh, nên hình ảnh giữ đơn giản và trang trọng, tông đen, đồng và vàng.', imgs:[['ls26_hero','Key visual']] },
+       { n:'01', h:'Key visual trên sân khấu', p:'Ngọn hải đăng trên sân khấu và màn hình LED, giữ đơn giản để người trình bày vẫn là trọng tâm.',
+         imgs:[['ls26_event-room','Main stage · Đồ họa sự kiện'],['ls26_speaker','Speaker session']] },
+       { n:'02', h:'Save the date, thư mời, email chuẩn bị', p:'Ba email gửi khách mời: thông báo ngày tổ chức, thư mời, hướng dẫn chuẩn bị.',
+         imgs:[['ls26_save-the-date','Save the date'],['ls26_invitation','Invitation email'],['ls26_preparation-mail','Preparation email']] },
+       { n:'03', h:'Bài đăng mạng xã hội', p:'Bài đăng trên LinkedIn và Facebook, ghép ảnh diễn giả với key visual của chương trình.',
+         imgs:[['ls26_linkedin','Leadership quote · LinkedIn'],['ls26_facebook','Campaign coverage · Facebook']] } ] } ] }
+];
+/* ---- mỗi dự án thành một "đồ vật" trong phòng: bấm vào đồ vật để mở dự án ---- */
+const G0=GAL.slice();
+const firstImg=secs=>{ for(const s of secs) if(s.imgs&&s.imgs.length) return s.imgs[0][0]; };
+const part=(w,kind,t,ix,o)=>{ const secs=ix.map(i=>w.sections[i]); return Object.assign({kind:kind,t:t,tag:w.t+' · '+(w.tag||''),cover:firstImg(secs),sections:secs},o||{}); };
+const img1=(w,kind,t,si,ii,o)=>{ const im=w.sections[si].imgs[ii]; return Object.assign({kind:kind,t:t,tag:w.t+' · '+(w.tag||''),cover:im[0],sections:[{imgs:[im]}]},o||{}); };
+const withKind=(w,kind)=>Object.assign({},w,{kind:kind});
+{ const E=G0[1].works[0], P=G0[3].works[0], Xh=G0[5].works[0], T=G0[6].works[0];
+  GAL[0]={ title:'Phòng truyền thống', works:[
+    { kind:'trophy', t:'Sinh viên 5 Tốt · Sinh viên xuất sắc', tag:'ĐH Văn hóa TP.HCM · 2019 – 2023', list:['Sinh viên 5 Tốt cấp Trường và cấp Thành phố (2021, 2022)','Sinh viên xuất sắc về học tập và rèn luyện 2022'] },
+    { kind:'pinboard', t:'Cán bộ Đoàn tiêu biểu', tag:'ĐH Văn hóa TP.HCM', list:['Cán bộ Đoàn tiêu biểu 2021','Vừa học vừa tham gia hoạt động Đoàn – Hội'] },
+    { kind:'diploma', t:'Cử nhân Truyền thông · B1', tag:'ĐH Văn hóa TP.HCM · 2019 – 2023', list:['Cử nhân Truyền thông, Đại học Văn hóa TP.HCM (2019 – 2023)','Chứng chỉ tiếng Anh B1'] } ] };
+  GAL[1]={ title:'Lớp học English Time', works:[
+    img1(E,'trophy','Hội thao English Time',0,0,{intro:E.intro,tags:E.tags}),
+    img1(E,'plane','Khóa tiếp viên hàng không · Vietnam Airlines',0,1),
+    img1(E,'pinboard','Tuyển dụng giáo viên tiếng Anh',0,2) ] };
+  GAL[3]={ title:'Cửa hàng PNJ', works:[
+    part(P,'vitrine','Poster theo chiến dịch',[0,1],{intro:P.intro,tags:P.tags,facts:P.facts,cover:'pnj_cover'}),
+    part(P,'phone','Bài đăng mạng xã hội',[2]),
+    part(P,'gift','Banner ưu đãi',[3]),
+    part(P,'envelope','Ấn phẩm in',[4]) ] };
+  GAL[4]={ title:'Văn phòng ACB · Workplace', works:[
+    withKind(G0[4].works[0],'podium'), withKind(G0[4].works[1],'pinboard'), withKind(G0[4].works[2],'mailbox'), withKind(G0[4].works[3],'newsstand') ] };
+  GAL[5]={ title:'Siêu thị · Chuyến Xe Hạnh Phúc', works:[
+    part(Xh,'bus','Key visual',[0],{intro:Xh.intro,tags:Xh.tags}),
+    part(Xh,'calendar','Chuỗi bài đếm ngược',[1]),
+    part(Xh,'mascot','Bài đăng fanpage Co.opmart',[2]) ] };
+  GAL[6]={ title:'Sảnh truyền thông tuyển dụng ACB', works:[
+    part(T,'standee','The Next Banker 2026',[0,1],{intro:T.intro,tags:T.tags,stats:T.stats,note:T.note,facts:T.facts}),
+    part(T,'ledscreen','Ấn phẩm tại sự kiện',[2]),
+    part(T,'monitor','Landing page',[3]),
+    part(T,'booth','Social và ngày hội việc làm',[4]),
+    part(T,'arcade','Cổng tương tác',[5]),
+    withKind(G0[6].works[1],'sign'), withKind(G0[6].works[2],'lighthouse') ] };
+}
+/* bỏ Galaxy và các việc cũ, chỉ giữ English Time; ACB Event (12/2025) đứng trước Co.op (2026) cho đúng dòng thời gian */
+{ const ZS=CONFIG.zones;
+  const NZ=[ZS[0],ZS[1],ZS[3],ZS[4],ZS[6],ZS[5]], NG=[GAL[0],GAL[1],GAL[3],GAL[4],GAL[6],GAL[5]];
+  CONFIG.zones=NZ;
+  NZ.forEach((z,i)=>{ z.gallery=NG[i]; z.gallery.works.forEach(w=>{ if(w.cover) w.i=w.cover; }); });
+}
+
+/* ============ HẾT PHẦN NỘI DUNG ============ */
+
+const $ = id => document.getElementById(id);
+const cv = $('cv'), ctx = cv.getContext('2d');
+ctx.imageSmoothingEnabled = false;
+const W=320, H=180, HZ=138, BASE=148, FEET=157, ZW=260, X0=150, SPEED=95, RUN=175, SC=2; /* thế giới vẽ ở 320x180 rồi nhân SC lên canvas 640x360 */
+/* mỗi phòng có thêm một bảng "Điểm nhấn" đứng đầu (thay cho rương cũ) */
+CONFIG.zones.forEach(z=>{ if(z.gallery.works.some(w=>w.i)) z.gallery.works.unshift({kind:'board',t:z.chest.title,tag:z.name,list:z.chest.items}); });
+const Z = CONFIG.zones, N = Z.length, WW = X0 + N*ZW + 170;
+const sx = i => X0 + i*ZW;
+const subst = s => s.replace(/\{name\}/g, CONFIG.name);
+const clamp = (v,a,b) => Math.max(a, Math.min(b, v));
+const reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* ---------- colour helpers ---------- */
+const hex = h => [1,3,5].map(i => parseInt(h.slice(i,i+2),16));
+const mix = (a,b,t) => a.map((v,i) => Math.round(v + (b[i]-v)*t));
+const rgb = c => 'rgb('+c[0]+','+c[1]+','+c[2]+')';
+const shade = (h,t,to) => rgb(mix(hex(h), to||[0,0,0], t));
+function ramp(stops,p){
+  for(let i=1;i<stops.length;i++){
+    if(p<=stops[i][0]){ const a=stops[i-1], b=stops[i]; return mix(hex(a[1]), hex(b[1]), (p-a[0])/(b[0]-a[0])); }
+  }
+  return hex(stops[stops.length-1][1]);
+}
+const SKYT=[[0,'#f0c6c2'],[.35,'#a7c3e3'],[.7,'#e59a8c'],[1,'#2a2650']];
+const SKYB=[[0,'#fdeedc'],[.35,'#f8e7dc'],[.7,'#f8d3a2'],[1,'#6a4a98']];
+const HILL1=[[0,'#d8bfcb'],[.35,'#c8b5cf'],[.7,'#b98a9e'],[1,'#3d3470']];
+const HILL2=[[0,'#c9a8a8'],[.35,'#bfa2a8'],[.7,'#a98390'],[1,'#3b3558']];
+const GRASS=[[0,'#a8b64e'],[.35,'#9fb050'],[.7,'#8b9a48'],[1,'#2f5d5a']];
+const SOIL=[[0,'#8e7f8c'],[.35,'#887b89'],[.7,'#705f73'],[1,'#2b2745']];
+const PATH=[[0,'#e0c9c2'],[.35,'#d9c3c0'],[.7,'#cca8a3'],[1,'#6b5a7c']];
+const PATHD=[[0,'#c6aba6'],[.35,'#c0a9a8'],[.7,'#b08c8c'],[1,'#554768']];
+const CLOUD=[[0,'#ffffff'],[.7,'#ffd9b8'],[1,'#6a5aa0']];
+const SUN  =[[0,'#fff4c2'],[.7,'#ffb35a'],[1,'#ff9a52']];
+
+/* ---------- state ---------- */
+let px=60, face=1, walk=0, moving=false, running=false, runLatch=false, shiftDown=false, state='intro', zi=-2, cam=0, camS=0, time=0;
+const keys={l:false,r:false};
+const visited=Array(N).fill(false), opened=Array(N).fill(false);
+const things=[];
+things.push({kind:'gate',z:-1,x:WW-95});
+/* cửa vào từng tòa nhà: tâm cửa tính từ mép trái tòa nhà (sx(i)+15) */
+const DOORT={school:108,english:37,publisher:52,jewelry:25,bank:75,market:85,bank2:58};
+for(let i=0;i<N;i++) things.push({kind:'door',z:i,x:sx(i)+15+DOORT[Z[i].type]});
+const npcX=i=>sx(i)+15+DOORT[Z[i].type]+36;   /* người giới thiệu đứng ngay trước tòa nhà, cạnh cửa */
+for(let i=0;i<N;i++) things.push({kind:'npc',z:i,x:npcX(i)});
+/* phòng triển lãm: bước vào cửa là sang một cảnh khác, đi dọc các khung tranh */
+const GAP=100, TOTAL=Z.reduce((a,z)=>a+z.gallery.works.length,0), seen=new Set();
+let room=null, outPx=0, outCam=0, fade=null;
+const WIMG={};
+function thumb(key){ if(!key) return null; let o=WIMG[key];
+  if(!o){ o={img:new Image(),ok:false}; o.img.onload=()=>{ o.ok=true; }; o.img.src='works/'+key+'_m.webp'; WIMG[key]=o; } return o; }
+function makeRoom(i){
+  const ws=Z[i].gallery.works, items=ws.map((w,k)=>({kind:'work',z:i,k:k,x:110+k*GAP}));
+  items.push({kind:'exit',z:i,x:26});
+  return {z:i,w:Math.max(W,110+(ws.length-1)*GAP+90),items:items};
+}
+let target=null, dlg=null;
+let special=null, animName='idle', animT=0;
+const sp={ended:false,onEnd:null};
+
+/* ---------- sprite nhân vật (ảnh nằm trong thư mục assets) ---------- */
+const SHEETS={"interact":{"src":"assets/player_interact.png","w":44,"h":65,"n":4},"wave":{"src":"assets/player_wave.png","w":52,"h":65,"n":4},"walk":{"src":"assets/player_walk.png","w":46,"h":66,"n":6},"run":{"src":"assets/player_run.png","w":64,"h":62,"n":6},"celebrate":{"src":"assets/player_celebrate.png","w":50,"h":71,"n":4}};
+/* seq = thứ tự frame trong sheet, fps = tốc độ, loop = lặp, hold = giữ frame cuối khi xong */
+const ANIMS={
+  idle:     {sheet:'interact',  seq:[0,3],            fps:1.4, loop:true},
+  walk:     {sheet:'walk',      seq:[0,1,2,3,4,5],    fps:9,   loop:true},
+  run:      {sheet:'run',       seq:[0,1,2,3,4,5],    fps:13,  loop:true},
+  talk:     {sheet:'interact',  seq:[0,1,2,1,2,1],    fps:3,   loop:true},
+  wave:     {sheet:'wave',      seq:[0,1,2,1,2,3],    fps:5,   loop:false},
+  celebrate:{sheet:'celebrate', seq:[0,1,2,3],        fps:4,   loop:true}
+};
+const sheets={};
+Object.keys(SHEETS).forEach(k=>{
+  const d=SHEETS[k], o={img:new Image(),ok:false,w:d.w,h:d.h,n:d.n};
+  o.img.onload=()=>{ o.ok=true; };
+  o.img.onerror=()=>{ o.ok=false; };
+  o.img.src=d.src;
+  sheets[k]=o;
+});
+function playSpecial(name,onEnd){ special=name; sp.ended=false; sp.onEnd=onEnd||null; animName=name; animT=0; }
+function clearSpecial(){ special=null; }
+function currentAnim(){ return special?special:(moving?(running?'run':'walk'):'idle'); }
+function tickAnim(dt){
+  const n=currentAnim();
+  if(n!==animName){ animName=n; animT=0; } else animT+=dt;
+  const d=ANIMS[n];
+  if(special&&!d.loop&&!sp.ended&&animT*d.fps>=d.seq.length){
+    sp.ended=true; const f=sp.onEnd; sp.onEnd=null;
+    if(!d.hold) special=null;
+    if(f) f();
+  }
+}
+function animFrame(){
+  const d=ANIMS[animName], len=d.seq.length, i=Math.floor(animT*d.fps);
+  return d.seq[d.loop?i%len:Math.min(len-1,i)];
+}
+const parts=[];
+const STARS=Array.from({length:46},(_,i)=>({x:(i*89+13)%W, y:(i*47+7)%85}));
+
+/* ---------- drawing primitives ---------- */
+const R=(x,y,w,h,c)=>{ ctx.fillStyle=c; ctx.fillRect(Math.round(x),Math.round(y),w,h); };
+function tri(cx,top,h,hw,c){ for(let r=0;r<h;r++){ const w=Math.max(2,Math.round(hw*2*(r+1)/h)); R(cx-w/2,top+r,w,1,c); } }
+function disc(cx,cy,r,c){ for(let dy=-r;dy<=r;dy++){ const w=Math.round(Math.sqrt(r*r-dy*dy)); R(cx-w,cy+dy,w*2+1,1,c); } }
+const winC=(n,k)=> n>.15 ? (k%3===1?'#3a3560':'#ffd987') : '#a9d5ee';
+
+function person(x,y,o){
+  x=Math.round(x); y=Math.round(y);
+  const s=o.moving?Math.sin(o.t*14):0, bob=o.moving&&Math.abs(s)>.5?-1:0, d=o.dir;
+  R(x-5,y-1,10,2,'rgba(0,0,0,.25)');
+  R(x-3,y-5,2,5-(s>.3?1:0),o.pants); R(x+1,y-5,2,5-(s<-.3?1:0),o.pants);
+  if(o.bag) R(d>0?x-6:x+3,y-10+bob,3,6,o.bag);
+  R(x-3,y-11+bob,6,6,o.shirt);
+  R(x-4,y-10+bob,1,4,o.shirt); R(x+3,y-10+bob,1,4,o.shirt);
+  R(x-5,y-20+bob,10,9,o.skin);
+  R(x-5,y-21+bob,10,4,o.hair);
+  R(d>0?x-5:x+2,y-18+bob,3,5,o.hair);
+  const e=d>0?[x,x+3]:[x-4,x-1];
+  R(e[0],y-15+bob,1,2,'#1d1b2e'); R(e[1],y-15+bob,1,2,'#1d1b2e');
+}
+/* NPC tạm vẽ bằng code, phóng k lần quanh chân (k nguyên để pixel không bị nhòe) */
+function personS(x,y,o,k){
+  ctx.save(); ctx.setTransform(1,0,0,1,0,0);
+  ctx.translate(Math.round(x*SC),Math.round(y*SC)); ctx.scale(k,k);
+  person(0,0,o);
+  ctx.restore(); ctx.setTransform(SC,0,0,SC,0,0);
+}
+function drawPlayer(){
+  const d=ANIMS[animName], sh=sheets[d.sheet], x=px-cam;
+  R(x-6,FEET-1,12,2,'rgba(0,0,0,.25)');
+  if(sh&&sh.ok){
+    ctx.save(); ctx.setTransform(1,0,0,1,0,0);
+    ctx.translate(Math.round(x*SC),FEET*SC);
+    if(face<0) ctx.scale(-1,1);
+    ctx.drawImage(sh.img,animFrame()*sh.w,0,sh.w,sh.h,-sh.w/2+(d.sheet==='run'?6:0),-sh.h,sh.w,sh.h);
+    ctx.restore(); ctx.setTransform(SC,0,0,SC,0,0);
+  } else {
+    personS(x,FEET,{skin:'#f1c9a0',hair:'#1d1b2e',shirt:'#f6b73c',pants:'#2f3f6b',bag:'#5fd1b5',dir:face,moving:moving,t:walk},3);
+  }
+}
+
+/* ---------- buildings (each returns the y of its highest point) ---------- */
+/* tòa nhà vẽ lại theo ảnh thật */
+const txt=(t,x,y,size,col,align)=>{ ctx.save(); ctx.fillStyle=col; ctx.font='700 '+size+'px "Chakra Petch",system-ui,sans-serif'; ctx.textAlign=align||'left'; ctx.textBaseline='alphabetic'; ctx.fillText(t,Math.round(x),Math.round(y)); ctx.restore(); };
+/* ĐH Văn hóa: khối cam, tháp kính ở giữa, mái đưa ra */
+function bSchool(x,z,n){
+  const w=124,h=98,top=BASE-h;
+  R(x+w-6,BASE-26,36,26,'#e8a57e'); R(x+w-6,BASE-28,36,3,'#c9784f'); R(x+w+6,BASE-19,7,19,'#6b3a2a'); R(x+w+19,BASE-19,7,19,'#6b3a2a');
+  R(x,BASE-44,w,44,'#e39a74'); R(x,BASE-45,w,2,'#c9784f');
+  for(let c=0;c<7;c++) for(let r=0;r<2;r++) R(x+6+c*17,BASE-39+r*17,11,9,winC(n,c+r*7));
+  R(x,top+8,26,h-52,'#d98a62'); R(x+8,top+10,6,h-56,'#f1d7bd'); for(let k=0;k<2;k++) R(x+16+k*4,top+10,2,h-56,'#c9936d');
+  R(x+26,top,72,h-44,'#4f7a72');
+  for(let r=0;r<7;r++){ R(x+26,top+3+r*7+5,72,1,'#2f5a52'); for(let c=0;c<4;c++) R(x+31+c*17,top+4+r*7,12,5,(n>.15&&hsh(r*4+c,3)>.4)?'#ffe9b0':'#8fc0b4'); }
+  R(x+98,top+8,26,h-52,'#e39a74'); R(x-5,top-3,w+10,4,'#c9784f'); R(x-3,top-5,w+6,2,'#a85c3a');
+  const cx=x+62; R(cx-7,BASE-22,14,22,'#5b3f2b'); R(cx-9,BASE-24,18,2,'#fff7e0'); R(x+38,BASE-2,48,2,'#d7c7a0');
+  return top-8;
+}
+/* English Time: biển đỏ chữ vàng */
+function bEnglish(x,z,n){
+  const w=104,h=58,top=BASE-h;
+  R(x,top,w,h,'#d6212a'); R(x,top,w,28,'#c81d25'); R(x,top+28,w,2,'#9c1219');
+  { const Y='#f6c42a', D='#7a1016', arc=(cx,cy,rx,ry,a0,a1,c,t)=>{ for(let a=a0;a<=a1;a+=3){ const r=a*Math.PI/180; R(cx+Math.cos(r)*rx,cy+Math.sin(r)*ry,t,t,c); } };
+    arc(x+15,top+17,8,10,105,235,D,3); arc(x+15,top+17,8,10,-50,60,D,3);
+    arc(x+15,top+17,8,10,108,232,Y,2); arc(x+15,top+17,8,10,-47,57,Y,2);
+    disc(x+5,top+10,2,Y); disc(x+22,top+6,2,Y);
+    R(x+11,top+11,2,13,Y); R(x+11,top+11,8,2,Y); R(x+11,top+16,6,2,Y); R(x+11,top+22,8,2,Y); }
+  txt('ANH NGỮ THỜI GIAN',x+30,top+9,5,'#fff'); txt('ENGLISH TIME',x+30,top+23,10,'#f6c42a');
+  R(x+34,top+32,32,h-32,'#26212c'); for(let k=0;k<4;k++) R(x+38+k*7,top+35,4,2,'#f4f1e6');
+  R(x+4,top+33,26,h-35,'#fff'); R(x+6,top+35,22,h-39,'#e8332f'); R(x+9,top+39,16,5,'#fff'); R(x+9,top+47,16,3,'#fcd34e');
+  R(x+70,top+33,30,h-35,n>.15?'#ffe9b0':'#b8c8d8'); R(x+84,top+33,1,h-35,'#8a96a6'); R(x+70,top+44,30,1,'#8a96a6');
+  R(x+34,BASE-3,32,3,'#7a4a3a');
+  return top-6;
+}
+/* PNJ NEXT: mặt tiền vàng, biển navy, màn LED xanh */
+function bJewelry(x,z,n){
+  const w=112,h=90,top=BASE-h;
+  R(x,top,w,h-26,'#e9c978');
+  for(let c=0;c<7;c++){ for(let r=0;r<3;r++){ R(x+4+c*16,top+4+r*17,1,13,'#c9a24a'); R(x+8+c*16,top+4+r*17,1,13,'#d8b45c'); R(x+12+c*16,top+4+r*17,1,13,'#c9a24a'); } }
+  if(n>.15){ ctx.globalAlpha=.25; R(x,top,w,h-26,'#fff2b8'); ctx.globalAlpha=1; }
+  R(x+7,top+14,25,32,'#1b2a5e'); R(x+15,top+19,9,6,'#e9c978'); txt('PNJ',x+19.5,top+39,10,'#fff','center');
+  R(x+80,top+10,25,32,'#1b2a5e'); R(x+88,top+15,9,6,'#e9c978'); txt('PNJ',x+92.5,top+35,10,'#fff','center');
+  R(x+42,top-8,26,54,'#2b6fd8'); R(x+42,top-8,26,3,'#5a95ee');
+  for(let k=0;k<14;k++){ const t=k/13, px=x+46+Math.round(t*18), py=top+(k<7?-2+Math.round(Math.sin(t*3.14)*0):0); R(px,top-4+Math.round(Math.sin(t*3.14)*14),2,2,'#fff'); }
+  R(x+53,top+14,4,5,'#fff'); txt('ĐẲNG CẤP',x+55,top+30,4,'#fff','center');
+  R(x,BASE-35,w,10,'#8a6a2a'); R(x,BASE-35,w,1,'#c9a24a'); txt('PNJ NEXT',x+8,BASE-27,7,'#fff');
+  R(x+5,BASE-25,w-10,25,'#272b36');
+  for(let k=0;k<7;k++) R(x+10+k*14,BASE-23,6,2,'#ffe9b0');
+  R(x+66,BASE-19,36,15,n>.15?'#ffe9b0':'#6f7a8e');
+  R(x+45,BASE-23,14,23,'#171321'); R(x+47,BASE-22,10,21,'#ffe9b0'); R(x+51,BASE-22,2,21,'#c9a24a');
+  R(x+44,BASE-2,16,3,'#c0392b');
+  return top-12;
+}
+/* Trung tâm học tập ACB: mặt dựng nan gỗ, mái dốc, cây xanh */
+function bBank(x,z,n){
+  const w=126,hL=36,hR=64;
+  for(let c=0;c<w;c+=2){ const hh=Math.round(hL+(hR-hL)*c/w); R(x+c,BASE-hh,2,hh,(c/2)%2?'#c9ab7b':'#a88b5b'); R(x+c,BASE-hh-3,2,3,'#8e98a6'); }
+  R(x+w-36,BASE-hR+8,28,24,n>.15?'#ffe9b0':'#86aed0'); R(x+w-22,BASE-hR+8,1,24,'#4a6a8a'); R(x+w-36,BASE-hR+19,28,1,'#4a6a8a');
+  R(x+48,BASE-23,14,23,'#2a2430'); R(x+46,BASE-25,18,2,'#6b6480'); R(x+44,BASE-3,22,3,'#cfc7d8');
+  for(const tx of [24,100]){ R(x+tx,BASE-32,2,32,'#6b4a3a'); disc(x+tx+1,BASE-36,10,'#6fa84f'); disc(x+tx-6,BASE-29,6,'#5f9a45'); disc(x+tx+8,BASE-31,7,'#7fb85a'); R(x+tx-5,BASE-8,1,8,'#b0a8a0'); R(x+tx+7,BASE-8,1,8,'#b0a8a0'); }
+  for(let k=0;k<4;k++) disc(x+68+k*9,BASE-4,6,'#4f8a3f');
+  R(x+6,BASE-8,18,2,'#c0623a'); R(x+8,BASE-6,2,6,'#7a4a3a'); R(x+20,BASE-6,2,6,'#7a4a3a');
+  return BASE-hR-6;
+}
+/* Hội sở ACB: tháp kính xanh, biển ACB, đèn đường */
+function bBank2(x,z,n){
+  const w=124,th=116,top=BASE-th;
+  R(x+86,top+24,34,th-24,'#c7d9ee'); R(x+86,top+24,34,2,'#e7f0fa'); for(let k=0;k<4;k++) R(x+90+k*8,top+30,1,th-60,'#9db9da');
+  R(x+14,top,76,th,'#2f5fb8'); R(x+62,top,28,th,'#3a72d2');
+  for(let r=0;r<11;r++) for(let c=0;c<6;c++) R(x+18+c*12,top+7+r*8,9,5,(hsh(r*6+c,5)>(n>.15?.35:.8))?'#d7ecff':'#4f86e0');
+  txt('ACB',x+20,top+17,12,'#fff');
+  R(x+8,BASE-32,96,32,'#1f3f86'); R(x+6,BASE-34,100,3,'#16294f');
+  for(let k=0;k<8;k++) R(x+12+k*12,BASE-29,7,2,'#cfe8ff');
+  R(x+12,BASE-24,88,10,'#eef5ff'); txt('NGÂN HÀNG Á CHÂU',x+56,BASE-17,5,'#1f3f86','center');
+  R(x+53,BASE-17,12,17,'#0b1a38'); R(x+55,BASE-16,8,16,n>.15?'#ffe9b0':'#10233f');
+  R(x+116,BASE-52,1,52,'#4a4a5a'); R(x+107,BASE-54,10,2,'#4a4a5a'); R(x+105,BASE-53,4,2,n>.15?'#fff6c8':'#d9d4e6');
+  if(n>.15){ ctx.globalAlpha=.16*n; disc(x+107,BASE-50,14,'#fff6c8'); ctx.globalAlpha=1; }
+  return top-8;
+}
+function bMarket(x,z,n){
+  const w=124,h=46,top=BASE-h;
+  R(x,top,w,h,'#f6f1e3'); R(x,top,w,12,z.color);
+  for(let k=0;k<w/8;k++) R(x+k*8,top+12,8,3,k%2?z.color:shade(z.color,.3));
+  R(x+26,top-10,72,10,shade(z.color,.35)); R(x+56,top-8,10,5,'#fff'); R(x+57,top-2,2,2,'#fff'); R(x+63,top-2,2,2,'#fff'); R(x+70,top-8,20,2,'#fff');
+  R(x+8,top+20,36,16,winC(n,0)); R(x+80,top+20,36,16,winC(n,2));
+  R(x+52,BASE-20,20,20,'#2e7d57'); R(x+54,BASE-18,7,18,'#bfe9d8'); R(x+63,BASE-18,7,18,'#bfe9d8');
+  const bx=x+w+2;
+  R(bx,BASE-17,38,17,'#ffcc33'); R(bx,BASE-6,38,2,'#e29b00');
+  for(let k=0;k<5;k++) R(bx+3+k*7,BASE-14,5,6,'#9bd0ea');
+  R(bx+6,BASE-3,7,7,'#222'); R(bx+26,BASE-3,7,7,'#222'); R(bx+8,BASE,3,3,'#888'); R(bx+28,BASE,3,3,'#888');
+  return top-18;
+}
+const BOLD={school:bSchool,english:bEnglish,jewelry:bJewelry,bank:bBank,market:bMarket,bank2:bBank2};
+/* tòa nhà dạng ảnh pixel (assets/b/*.png, nền đã tách); nếu ảnh chưa tải thì dùng bản vẽ bằng code */
+const BSZ={"school": {"w": 140, "h": 112, "door": 108}, "bank2": {"w": 128, "h": 110, "door": 58}, "market": {"w": 160, "h": 49, "door": 85}, "english": {"w": 122, "h": 71, "door": 37}, "bank": {"w": 150, "h": 50, "door": 75}, "jewelry": {"w": 80, "h": 102, "door": 25}};
+const BSP={}, BUILD={};
+Object.keys(BSZ).forEach(k=>{
+  const o={img:new Image(),ok:false}; o.img.onload=()=>{ o.ok=true; }; o.img.src='assets/b/'+k+'.png'; BSP[k]=o;
+  BUILD[k]=(x,z,n)=>{
+    const d=BSZ[k]; if(!o.ok) return BOLD[k](x,z,n);
+    ctx.save(); ctx.setTransform(1,0,0,1,0,0);
+    ctx.drawImage(o.img,Math.round(x*SC),Math.round((BASE+3)*SC)-d.h*2,d.w*2,d.h*2);
+    ctx.restore(); ctx.setTransform(SC,0,0,SC,0,0);
+    return BASE+3-d.h;
+  };
+});
+function star(x,y){ y+=Math.round(Math.sin(time*3)*1.5); R(x-1,y-4,2,8,'#ffd34e'); R(x-4,y-1,8,2,'#ffd34e'); R(x-2,y-2,4,4,'#fff3b0'); }
+
+/* ---------- props ---------- */
+function gate(x){
+  /* chặng kế tiếp: khu đất trống với bản vẽ tòa nhà dạng nét đứt, chờ một công ty mới */
+  x=Math.round(x); const pulse=.55+.25*Math.sin(time*2.4), L=x-22, T=BASE-74, w=44, h=74;
+  ctx.globalAlpha=.16+.08*Math.sin(time*2.4); R(L,T,w,h,'#9fdcff'); ctx.globalAlpha=1;
+  ctx.globalAlpha=pulse+.2;
+  for(let i=0;i<w;i+=4){ R(L+i,T,2,1,'#e8f6ff'); R(L+i,BASE-1,2,1,'#e8f6ff'); }
+  for(let j=0;j<h;j+=4){ R(L,T+j,1,2,'#e8f6ff'); R(L+w-1,T+j,1,2,'#e8f6ff'); }
+  for(let r=0;r<4;r++) for(let c=0;c<3;c++){ for(let i=0;i<6;i+=2) R(L+6+c*13+i,T+10+r*13,1,1,'#bfe6ff'); R(L+6+c*13,T+10+r*13,1,6,'#bfe6ff'); R(L+11+c*13,T+10+r*13,1,6,'#bfe6ff'); }
+  R(x-5,BASE-16,10,1,'#e8f6ff'); R(x-5,BASE-16,1,16,'#e8f6ff'); R(x+4,BASE-16,1,16,'#e8f6ff');
+  ctx.globalAlpha=1;
+  if(typeof allB==='function'&&allB()){ ctx.globalAlpha=.3+.2*Math.sin(time*4); R(L-3,T-3,w+6,h+6,'#ffe58a'); ctx.globalAlpha=1; }
+  txt('?',x,T+30,26,(typeof allB==='function'&&allB())?'#ffd34e':'#fff7c8','center');
+  /* biển công trường + nón */
+  R(x-44,BASE-26,2,26,'#8a6a4b'); R(x-52,BASE-34,22,12,'#f6b73c'); R(x-52,BASE-34,22,1,'#fff3b0'); R(x-52,BASE-23,22,1,'#b87a14');
+  txt('TIẾP THEO',x-41,BASE-26,4,'#4b2e1b','center'); txt('?',x-41,BASE-17,6,'#4b2e1b','center');
+  for(const cx of [x+30,x+38]){ tri(cx,BASE-9,9,3,'#ff7a2f'); R(cx-1,BASE-5,2,1,'#fff'); R(cx-4,BASE-1,8,2,'#2c2745'); }
+  star(x,BASE-84);
+}
+function lamp(x,n){
+  R(x,BASE-34,1,34,'#2c2745'); R(x-3,BASE-37,7,3,'#2c2745');
+  R(x-2,BASE-34,5,2,n>.15?'#ffd987':'#c9c2e6');
+  if(n>.15){ ctx.globalAlpha=.12*n; disc(x+.5,BASE-30,13,'#ffd987'); ctx.globalAlpha=1; }
+}
+
+/* ---------- scene ---------- */
+
+/* ---------- nhà phố Việt Nam: mặt tiền hẹp, ban công, biển hiệu, mái hiên sọc ---------- */
+const SHOPC=['#f1e8a4','#62b9e3','#e8c04c','#f5f1ea','#f0a9b3','#84cdbd','#eb9a62','#d8cfae'];
+const SIGNS=[['CÀ PHÊ SINH TỐ','#2a2a38','#f4e9c8'],['TẠP HÓA','#f0a020','#4a2a10'],['HIỆU THUỐC','#d6342c','#fff4d8'],['PHỞ BÒ 88','#fbf7ee','#c8281e'],['PHỤ LIỆU MAY','#2a4aa8','#e8f0ff'],['TIỆM TÓC','#2f8f6a','#f0fff6'],['BÁNH MÌ','#f2c230','#6b2a10'],['NƯỚC MÍA','#2a9a5a','#f4ffe8'],['QUÁN ĂN','#c9433f','#fff3e0'],['NHÀ NGHỈ','#2a3a78','#ffe9a8']];
+const AWN=[['#2f5aa8','#f4f6fb'],['#f26a2e','#f9a56a'],['#d63a5a','#fbe9ee'],['#2f9a6a','#f0fff6'],['#e8b030','#fff4c8']];
+function fitTxt(t,cx,y,maxw,size,col){
+  ctx.save(); let s=size; ctx.font='700 '+s+'px "Chakra Petch",system-ui,sans-serif';
+  while(ctx.measureText(t).width>maxw&&s>3){ s-=.5; ctx.font='700 '+s+'px "Chakra Petch",system-ui,sans-serif'; }
+  ctx.fillStyle=col; ctx.textAlign='center'; ctx.textBaseline='alphabetic'; ctx.fillText(t,Math.round(cx),Math.round(y)); ctx.restore();
+}
+function shop(x,w,f,k,p,n){
+  const lit=n>.15, gH=38, fH=30, hh=gH+fH*(f-1), top=BASE-hh, gy=BASE-gH;
+  const c=mix(mix(hex(SHOPC[k%SHOPC.length]),ramp(HILL2,p),.22),[44,36,92],n*.5), dk=mix(c,[0,0,0],.3), lt=mix(c,[255,255,255],.35);
+  const C=rgb(c), D=rgb(dk), L=rgb(lt), glass=lit?'#ffd987':rgb(mix([95,147,201],ramp(HILL2,p),.3)), warm=lit?'#ffe6a8':'#e9eef7';
+  R(x,top,w,hh,C); R(x+w-2,top,2,hh,D); R(x,top,1,hh,L);
+  /* mái / đầu hồi */
+  const roof=k%3;
+  if(roof===0){ R(x-1,top-3,w+2,3,L); R(x-1,top,w+2,1,D); }
+  else if(roof===1){ for(let i=0;i<w;i++){ const o=Math.round(Math.sin(Math.PI*i/(w-1))*7); R(x+i,top-3-o,1,o+3,L); R(x+i,top-3-o,1,1,D); } R(x+Math.floor(w/2)-1,top-6,3,3,D); }
+  else { R(x-2,top-4,w+4,4,'#b8573a'); for(let i=0;i<w+4;i+=3) R(x-2+i,top-4,1,4,'#8f3f2a'); R(x-2,top,w+4,1,D); }
+  /* các tầng trên */
+  for(let fl=0;fl<f-1;fl++){
+    const fy=top+fl*fH, kd=hsh(k*3+fl,5); R(x,fy+fH-3,w,3,L);
+    if(kd<.42){                                   /* ban công: cửa kính, lan can sắt, chậu cây, đồ phơi */
+      R(x+6,fy+5,w-12,fH-9,lit?'#ffd987':'#1c4252'); R(x+6,fy+5,w-12,1,D);
+      R(x+Math.floor(w/2)-1,fy+5,1,fH-9,rgb(dk)); R(x+8,fy+7,3,fH-13,lit?'#fff0c4':'#2d6a80');
+      R(x+3,fy+fH-13,w-6,1,'#1a1a24'); for(let i=0;i<w-6;i+=3) R(x+4+i,fy+fH-12,1,9,'#1a1a24'); R(x+3,fy+fH-4,w-6,1,'#1a1a24');
+      if(hsh(k,fl+11)>.4){ for(let i=0;i<3;i++){ R(x+6+i*7,fy+fH-17,6,5,['#e86a7a','#f4f1ea','#6aa0e0'][(i+k)%3]); } R(x+4,fy+fH-18,w-8,1,'#8a7a80'); }
+      else { disc(x+9,fy+fH-16,3,'#5d8a3a'); R(x+8,fy+fH-14,3,2,'#c0623a'); disc(x+w-10,fy+fH-16,3,'#e0643a'); R(x+w-11,fy+fH-14,3,2,'#8f5a3a'); }
+    } else if(kd<.78){                            /* cửa sổ + máy lạnh */
+      R(x+6,fy+6,w-12,fH-12,'#f4f1ea'); R(x+8,fy+8,w-16,fH-16,glass); R(x+Math.floor(w/2)-1,fy+8,1,fH-16,'#c9d4e8'); R(x+8,fy+Math.floor(fH/2)-1,w-16,1,'#c9d4e8');
+      if(hsh(k,fl+7)>.35){ R(x+w-11,fy+fH-9,9,5,'#e9e9ef'); R(x+w-10,fy+fH-8,3,3,'#8a8a99'); R(x+w-11,fy+fH-4,9,1,'#bdbdc9'); }
+    } else {                                      /* mảng kính lớn */
+      R(x+4,fy+5,w-8,fH-10,rgb(mix(dk,[20,30,60],.5))); R(x+4,fy+5,w-8,fH-10,lit?'#ffd987':rgb(mix(dk,[20,30,60],.5)));
+      for(let i=0;i<w-8;i+=8) R(x+4+i,fy+5,1,fH-10,rgb(dk)); R(x+4,fy+12,w-8,1,rgb(dk));
+    }
+  }
+  /* tầng trệt: biển hiệu, mái hiên, cửa hàng */
+  const sg=SIGNS[(k*3+1)%SIGNS.length], aw=AWN[(k+hsh(k,2)*3|0)%AWN.length], shut=hsh(k,9)>.8;
+  R(x+1,gy-9,w-2,9,sg[1]); R(x+1,gy-9,w-2,1,'rgba(255,255,255,.35)'); fitTxt(sg[0],x+w/2,gy-2,w-5,5,sg[2]);
+  if(shut){ R(x+3,gy,w-6,gH,'#cfc9c0'); for(let yy=0;yy<gH;yy+=3) for(let xx=(yy/3%2)*2;xx<w-6;xx+=4) R(x+3+xx,gy+yy,1,1,'#7a746c'); R(x+w-12,gy+10,7,gH-10,'#7a4a2a'); }
+  else {
+    R(x+3,gy,w-6,gH,'#2d2630'); R(x+4,gy+8,w-8,gH-8,lit?'#7a5a38':'#3a323e');
+    for(let r=0;r<2;r++) for(let i=0;i<5;i++) R(x+6+i*((w-14)/4|0),gy+12+r*8,3,3,['#e8743b','#f2d03b','#7bc67e','#d9485f','#4aa3d8'][(i+r+k)%5]);
+    for(let i=0;i<w;i+=4) R(x+i,gy,4,6,(i/4)%2?aw[0]:aw[1]); for(let i=0;i<w;i+=4) R(x+i,gy+6,4,2,(i/4)%2?aw[0]:aw[1]);
+    R(x,gy+8,w,1,'rgba(0,0,0,.18)');
+  }
+}
+/* dây điện chằng chịt giữa các cột */
+function wires(off,n){
+  const sp=170, i0=Math.floor(off/sp)-1, col=n>.2?'#5a5078':'#4a4258';
+  for(let i=i0;i<=i0+Math.ceil(W/sp)+2;i++){
+    const x0=Math.round(i*sp-off), x1=x0+sp, ty=BASE-84;
+    R(x0-1,ty,3,84,'#3a3448'); R(x0-8,ty+2,17,2,'#3a3448'); R(x0-6,ty+9,13,2,'#3a3448'); R(x0-9,ty+1,2,4,'#7a7490'); R(x0+8,ty+1,2,4,'#7a7490');
+    for(const [dy,sag] of [[2,7],[4,10],[10,8],[11,5]]) for(let xx=0;xx<=sp;xx+=2){ const t=xx/sp; R(x0+xx,ty+dy+Math.round(Math.sin(Math.PI*t)*sag),2,1,col); }
+  }
+}
+
+/* ---------- thành phố: nền nhiều lớp (bầu trời, dãy nhà xa, chung cư có ban công, hàng rào cây, vỉa hè, đường) ---------- */
+const hsh=(i,k)=>{ const v=Math.sin(i*127.1+k*311.7)*43758.5453; return v-Math.floor(v); };
+const FAR=[], APT=[], BLOCK=[];
+{ let x=-20; while(x<WW*.18+W+80){ const w=22+Math.floor(hsh(x,1)*26); FAR.push({x:x,w:w,h:30+Math.floor(hsh(x,2)*46),k:FAR.length}); x+=w+Math.floor(hsh(x,3)*4); }
+  x=-40; while(x<WW*.5+W+240){ const w=36+Math.floor(hsh(x,4)*14), f=3+Math.floor(hsh(x,5)*2); APT.push({x:x,w:w,f:f,k:APT.length}); x+=w+(hsh(x,6)<.8?0:5); }
+  for(let i=0;i<N;i++){ const bx=sx(i)+15; BLOCK.push([bx-14,bx+(BSZ[Z[i].type]?BSZ[Z[i].type].w:140)+30]); BLOCK.push([npcX(i)-16,npcX(i)+16]); } }
+function bench(x,by){ R(x-14,by-18,28,3,'#6b4a45'); R(x-14,by-13,28,3,'#7a5651'); R(x-14,by-9,28,3,'#6b4a45'); R(x-12,by-6,3,6,'#4a3030'); R(x+9,by-6,3,6,'#4a3030'); R(x-12,by-18,2,12,'#4a3030'); R(x+10,by-18,2,12,'#4a3030'); }
+function trashcan(x,by){ R(x-4,by-14,8,14,'#6f6a86'); R(x-5,by-16,10,3,'#8a859f'); R(x-1,by-9,2,3,'#d8d2e8'); }
+function bike(x,by){ for(let k=0;k<2;k++){ const cx=x-7+k*14; for(let a=0;a<12;a++){ const t=a/12*6.283; R(cx+Math.round(Math.cos(t)*5),by-6+Math.round(Math.sin(t)*5),1,1,'#4a3a3a'); } }
+  R(x-7,by-6,7,1,'#c9a24a'); R(x,by-6,5,1,'#c9a24a'); R(x-2,by-14,1,8,'#c9a24a'); R(x-4,by-15,5,1,'#4a3a3a'); R(x+5,by-13,3,1,'#4a3a3a'); R(x+7,by-12,1,6,'#c9a24a'); }
+function nosign(x,by){ R(x,by-36,2,36,'#6b5a62'); disc(x+1,by-38,6,'#c9433f'); R(x-4,by-39,10,3,'#f6e9e6'); }
+function tree(x,by){ R(x-1,by-26,3,26,'#6b4a3a'); disc(x,by-36,11,'#86a047'); disc(x-7,by-30,7,'#76903e'); disc(x+7,by-31,8,'#a0b556'); disc(x+2,by-42,6,'#a7ba5c'); }
+const YEARS=['2019','2020','2022','2024','2025','2026'];
+/* đồ vật bên đường kiểu Việt Nam */
+function stools(x,by){ R(x-9,by-10,18,2,'#8a4a2a'); R(x-7,by-8,1,8,'#6a3a1e'); R(x+6,by-8,1,8,'#6a3a1e'); R(x-3,by-13,6,3,'#f4f1ea'); R(x-2,by-14,4,1,'#c9433f');
+  for(const sx2 of [x-15,x+11]){ R(sx2,by-7,6,2,'#d63a3a'); R(sx2+1,by-5,1,5,'#a82828'); R(sx2+4,by-5,1,5,'#a82828'); } }
+function scooter(x,by,sd){ const bc=['#2f7a54','#c9433f','#2a5aa8','#e8b030'][Math.abs(Math.round(sd||0))%4];
+  disc(x-9,by-4,4,'#222'); disc(x+9,by-4,4,'#222'); disc(x-9,by-4,1,'#9a9a9a'); disc(x+9,by-4,1,'#9a9a9a');
+  R(x-10,by-10,19,5,bc); R(x-6,by-13,9,3,'#2a2430'); R(x+7,by-17,2,12,'#555'); R(x+5,by-18,6,1,'#222'); R(x+10,by-13,2,2,'#ffe27a'); R(x-12,by-11,3,5,bc); }
+function cart(x,by){ R(x-13,by-14,26,8,'#d9b36a'); R(x-13,by-22,26,8,'#bfe6f2'); R(x-13,by-22,26,1,'#fff'); for(let i=0;i<4;i++) R(x-10+i*6,by-19,4,3,'#e8b86a');
+  disc(x-8,by-4,3,'#333'); disc(x+8,by-4,3,'#333'); R(x-1,by-44,2,22,'#8a8a8a'); tri(x,by-52,10,18,'#e8453c'); for(let i=-14;i<14;i+=6) R(x+i,by-44,3,1,'#fff'); }
+function phuong(x,by,sd){ sd=sd||0; R(x-2,by-56,4,56,'#5b3a2a'); R(x-3,by-4,6,4,'#4a2e20'); R(x-9,by-44,7,2,'#5b3a2a'); R(x+2,by-50,9,2,'#5b3a2a');
+  const cl=['#e8562a','#f2842f','#f4b73a','#6fa03f','#d9402a'];
+  for(let j=0;j<14;j++){ const cx=x+Math.round((hsh(sd,j)-.5)*44), cy=by-68+Math.round((hsh(sd,j+20)-.5)*26); disc(cx,cy,7+j%4,cl[(j+(j>8?1:0))%5]); }
+  for(let j=0;j<40;j++){ R(x+Math.round((hsh(sd,j+40)-.5)*54),by-82+Math.round(hsh(sd,j+60)*34),2,2,cl[j%3]); }
+  for(let j=0;j<7;j++) R(x+Math.round((hsh(sd,j+80)-.5)*36),by-1+(j%2),2,1,'#e8562a'); }
+const PROPS=[stools,scooter,phuong,cart,trashcan,scooter,nosign,phuong,bench];
+function drawCity(p,n){
+  const g=ctx.createLinearGradient(0,0,0,BASE);
+  g.addColorStop(0,rgb(ramp(SKYT,p))); g.addColorStop(1,rgb(ramp(SKYB,p)));
+  ctx.fillStyle=g; ctx.fillRect(0,0,W,BASE+2);
+  if(n>0){ for(let i=0;i<STARS.length;i++){ ctx.globalAlpha=n*(.55+.45*Math.sin(time*2+i)); R(STARS[i].x,STARS[i].y,1,1,'#fff'); } ctx.globalAlpha=1; }
+  if(p<.9) disc(Math.round(255-p*70),Math.round(24+p*66),9,rgb(ramp(SUN,p)));
+  if(n>0){ ctx.globalAlpha=n; disc(262,28,7,'#f3efe0'); R(259,26,2,2,'#d8d2c0'); R(264,30,2,2,'#d8d2c0'); ctx.globalAlpha=1; }
+  const cc=rgb(ramp(CLOUD,p)); ctx.globalAlpha=.8-n*.4;
+  for(let i=0;i<6;i++){ const x=(((i*150+30-cam*.2-time*2)%700)+700)%700-100, y=14+(i*23)%40; R(x,y,26,5,cc); R(x+4,y-3,14,4,cc); R(x+10,y-5,8,3,cc); }
+  ctx.globalAlpha=1;
+  /* dãy nhà xa */
+  const fc0=ramp(HILL1,p), off1=cam*.18, lit=n>.15;
+  for(const b of FAR){ const x=Math.round(b.x-off1); if(x>W||x+b.w<0) continue;
+    const top=BASE-b.h-8; R(x,top,b.w,b.h+10,rgb(mix(fc0,[0,0,0],b.k%2?.1:0)));
+    for(let r=0;r<Math.floor(b.h/11);r++) for(let c=0;c<Math.floor((b.w-4)/9);c++) if(hsh(b.k,r*7+c)>.45) R(x+4+c*9,top+4+r*11,4,5,lit?'#ffd987':rgb(mix(fc0,[255,255,255],.35))); }
+  /* dãy nhà phố */
+  const off2=cam*.5;
+  for(const b of APT){ const x=Math.round(b.x-off2); if(x>W||x+b.w<0) continue; shop(x,b.w,b.f,b.k,p,n); }
+  wires(off2,n);
+  /* mốc thời gian: số năm mờ phía sau từng tòa nhà */
+  { ctx.save(); ctx.font='700 34px "Chakra Petch",system-ui,sans-serif'; ctx.textAlign='center'; ctx.textBaseline='alphabetic';
+    const ya=(.24-.1*n).toFixed(3); ctx.fillStyle='rgba(255,255,255,'+ya+')'; R(0,56,W,1,'rgba(255,255,255,'+(.2-.08*n).toFixed(3)+')');
+    for(let i=0;i<N;i++){ const cx=Math.round(sx(i)+15+60-cam); if(cx<-80||cx>W+80) continue; ctx.fillStyle='rgba(255,255,255,'+ya+')'; ctx.fillText(YEARS[i],cx,44); R(cx-2,54,5,5,'rgba(255,255,255,'+(.4-.15*n).toFixed(3)+')'); }
+    ctx.restore(); }
+  const hg=rgb(ramp(GRASS,p));
+  R(0,BASE-2,W,2,'rgba(40,30,60,.25)');
+  /* đồ vật bên đường */
+  for(let s2=Math.floor(cam/90)-1;s2<=Math.floor((cam+W)/90)+1;s2++){
+    const wx=s2*90+14+Math.floor(hsh(s2,6)*50); let bad=false; for(const r of BLOCK) if(wx>r[0]&&wx<r[1]){ bad=true; break; }
+    if(bad||wx<30||wx>WW-120) continue;
+    PROPS[Math.floor(hsh(s2,7)*PROPS.length)](Math.round(wx-cam),BASE+7,Math.round(wx));
+  }
+  /* vỉa hè */
+  R(0,BASE,W,16,rgb(ramp(PATH,p))); const gt=rgb(ramp(PATHD,p));
+  for(let x=-(cam%24);x<W;x+=24) R(x,BASE,1,16,gt);
+  R(0,BASE+7,W,1,gt);
+  for(let i=Math.floor(cam/31)-1;i<=Math.floor((cam+W)/31)+1;i++){ const x=i*31-cam+Math.floor(hsh(i,2)*20), y=BASE+2+Math.floor(hsh(i,3)*11); R(x,y,2,1,hg); R(x+1,y-1,1,1,hg); }
+  /* lề + lòng đường */
+  R(0,BASE+16,W,2,'#f0e0dc'); R(0,BASE+18,W,1,rgb(mix(ramp(PATH,p),[0,0,0],.25)));
+  R(0,BASE+19,W,H-BASE-19,rgb(ramp(SOIL,p)));
+  for(let x=-((cam)%48);x<W;x+=48) R(x,BASE+30,24,2,'#efe2c8');
+  for(let i=Math.floor(cam/53)-1;i<=Math.floor((cam+W)/53)+1;i++) R(i*53-cam,BASE+22+Math.floor(hsh(i,9)*10),2,1,rgb(mix(ramp(SOIL,p),[0,0,0],.2)));
+}
+function veil(){
+  if(!fade) return;
+  const a=fade.t<.3?fade.t/.3:Math.max(0,(.6-fade.t)/.3);
+  ctx.fillStyle='rgba(11,10,28,'+a.toFixed(3)+')'; ctx.fillRect(0,0,W,H);
+}
+/* ---------- phòng triển lãm: mỗi chặng một không gian riêng, mỗi dự án là một đồ vật để bấm ---------- */
+const THEME={
+  school:   {wall:'#efe3c6',dark:'#8a6a4a',floor:'#a8845a',line:'#8a6a47'},
+  english:  {wall:'#fdf0d5',dark:'#e67e22',floor:'#c99a5e',line:'#a97c45'},
+  publisher:{wall:'#d9c4a2',dark:'#7a5a44',floor:'#8f6b4a',line:'#6f5238'},
+  jewelry:  {wall:'#1d1c3b',dark:'#12112a',floor:'#d3ccdc',line:'#a79fb8'},
+  bank:     {wall:'#dfeaf5',dark:'#1f6fb5',floor:'#cfd6e2',line:'#a9b4c8'},
+  market:   {wall:'#f6f1e3',dark:'#1f9d55',floor:'#c9c3b6',line:'#a9a392'},
+  bank2:    {wall:'#262152',dark:'#14103a',floor:'#3b2f6b',line:'#2f2558'}
+};
+const BOOKC=['#d64545','#2f80ed','#f2a93b','#5fd1b5','#7a6ad8','#e8738a','#4a9a5c','#c9a24a'];
+function wallDeco(type,cam){
+  const pc=i=>Math.floor(i);
+  if(type==='school'){
+    for(let bx=40-((cam*1)%200);bx<W+10;bx+=200){ R(bx,22,130,56,'#8a6a4a'); R(bx+3,25,124,50,'#2f5d4a'); for(let k=0;k<5;k++) R(bx+10,32+k*8,40+((k*37)%60),1,'#e8f0e8'); R(bx+3,75,124,3,'#d9c9a0'); }
+    for(let bx=150-((cam)%200);bx<W+10;bx+=200){ disc(bx,40,9,'#fff7e0'); disc(bx,40,7,'#fffaf0'); R(bx,34,1,6,'#2c2745'); R(bx,40,4,1,'#2c2745'); }
+  } else if(type==='english'){
+    for(let x=-((cam)%64);x<W+64;x+=16){ const k=Math.floor((x+cam)/16); tri(x+8,10,9,6,['#e8738a','#f2a93b','#5fd1b5','#4aa3d8'][((k%4)+4)%4]); }
+    R(0,9,W,1,'#8a6a4a');
+    for(let bx=60-((cam)%180);bx<W+10;bx+=180){ R(bx,26,44,48,'#8a6a4a'); R(bx+3,29,38,42,'#a9d5ee'); R(bx+21,29,2,42,'#8a6a4a'); R(bx+3,49,38,2,'#8a6a4a'); R(bx+8,36,8,3,'#fff'); }
+  } else if(type==='publisher'){
+    for(let r=0;r<4;r++){ const y=16+r*30; R(0,y+26,W,3,'#5b3f2b');
+      for(let x=-(cam%5)-5;x<W+5;x+=5){ const k=Math.floor((x+cam)/5), h=16+Math.floor(hsh(k,r+3)*9); R(x,y+26-h,4,h,BOOKC[Math.floor(hsh(k,r)*8)]); } }
+    ctx.globalAlpha=.55; R(0,0,W,BASE,'#d9c4a2'); ctx.globalAlpha=1;
+  } else if(type==='jewelry'){
+    for(let bx=30-((cam)%90);bx<W+10;bx+=90){ R(bx,8,2,BASE-24,'#e8c15a'); }
+    for(let bx=75-((cam)%180);bx<W+10;bx+=180){ R(bx,4,1,22,'#e8c15a'); for(let r=0;r<7;r++){ const w=4+r*3; R(bx-w/2,26+r,w,1,r%2?'#e8c15a':'#fff0b8'); } ctx.globalAlpha=.1; disc(bx,34,22,'#fff0b8'); ctx.globalAlpha=1; }
+  } else if(type==='bank'){
+    for(let bx=20-((cam*1)%130);bx<W+10;bx+=130){ R(bx,14,96,86,'#8a9ab8'); R(bx+3,17,90,80,'#bfe0f2'); for(let k=0;k<7;k++){ const h=14+Math.floor(hsh(bx+cam,k)*30); R(bx+5+k*12,97-h,10,h,'#9ab5d6'); } R(bx+47,17,2,80,'#8a9ab8'); R(bx+3,55,90,2,'#8a9ab8'); }
+  } else if(type==='market'){
+    for(let r=0;r<3;r++){ const y=30+r*32; R(0,y+24,W,3,'#b9b09a'); for(let x=-(cam%9)-9;x<W+9;x+=9){ const k=Math.floor((x+cam)/9), h=10+Math.floor(hsh(k,r+7)*12); R(x+1,y+24-h,7,h,BOOKC[Math.floor(hsh(k,r+2)*8)]); } }
+    for(let bx=30-((cam)%170);bx<W+10;bx+=170){ R(bx,4,1,10,'#6b6480'); R(bx-16,14,34,10,'#1f9d55'); R(bx-12,17,26,2,'#fff'); }
+    ctx.globalAlpha=.35; R(0,0,W,BASE,'#f6f1e3'); ctx.globalAlpha=1;
+  } else {
+    R(0,8,W,4,'#6b6480');
+    for(let bx=20-((cam*1)%70);bx<W+10;bx+=70){ R(bx-3,12,7,4,'#2c2745'); }
+    const cols=['#5fd1b5','#f6b73c','#7aa7ff','#e8738a'];
+    for(let k=0;k<5;k++){ const bx=((k*90+20)-cam*.9)%(W+120)-20; ctx.globalAlpha=.1; for(let r=0;r<70;r++){ const w=3+r*.5; R(bx-w/2+Math.sin(time*1.4+k)*10*r/70,16+r,w,1,cols[(k+Math.floor(time*.5))%4]); } ctx.globalAlpha=1; }
+    R(0,100,W,3,cols[Math.floor(time*2)%4]);
+  }
+}
+/* đồ vật: (x giữa, by = mặt sàn) */
+const PROP={
+  trophy(x,by){ R(x-9,by-4,18,4,'#6b4a2a'); R(x-3,by-14,6,10,'#d9a93a'); for(let r=0;r<13;r++){ const w=20-Math.round(r*.6); R(x-w/2,by-28+r,w,1,'#f2c14a'); } R(x-13,by-26,4,7,'#d9a93a'); R(x+9,by-26,4,7,'#d9a93a'); R(x-6,by-27,2,8,'#fff3b0'); },
+  diploma(x,by){ R(x-16,by-42,32,34,'#8a6a4a'); R(x-14,by-40,28,30,'#fff7e0'); R(x-10,by-35,20,2,'#cbb98a'); R(x-8,by-31,16,2,'#cbb98a'); disc(x,by-20,5,'#c0392b'); disc(x,by-20,2,'#ffd34e'); R(x-3,by-14,2,5,'#c0392b'); R(x+1,by-14,2,5,'#c0392b'); R(x-12,by-8,2,8,'#6b4a2a'); R(x+10,by-8,2,8,'#6b4a2a'); },
+  pinboard(x,by){ R(x-20,by-46,40,36,'#6b4a2a'); R(x-18,by-44,36,32,'#b98c5a'); R(x-15,by-40,11,13,'#fff'); R(x-2,by-38,10,10,'#ffe28a'); R(x+10,by-41,6,14,'#9bd0ea'); R(x-13,by-24,12,9,'#f2a0c8'); R(x+2,by-25,12,9,'#c9f0d0'); R(x-10,by-41,1,1,'#d64545'); R(x+2,by-39,1,1,'#d64545'); R(x-16,by-10,2,10,'#6b4a2a'); R(x+14,by-10,2,10,'#6b4a2a'); },
+  plane(x,by){ R(x-9,by-3,18,3,'#6b6480'); R(x-1,by-24,2,21,'#6b6480'); R(x-18,by-38,34,6,'#f4f4f4'); R(x+16,by-37,4,4,'#f4f4f4'); R(x-18,by-46,5,10,'#d64545'); R(x-5,by-34,14,3,'#c9d3e6'); R(x-3,by-45,6,12,'#d6dff0'); for(let k=0;k<6;k++) R(x-12+k*4,by-37,2,2,'#4a6fa5'); },
+  shelf(x,by){ R(x-18,by-50,36,50,'#7a5a44'); for(let r=0;r<3;r++){ R(x-16,by-17-r*15,32,2,'#5b3f2b'); for(let k=0;k<7;k++){ const h=9+((k*5+r*3)%5); R(x-15+k*4,by-17-r*15-h,3,h,BOOKC[(k+r*3)%8]); } } R(x-16,by-8,32,6,'#5b3f2b'); },
+  laptop(x,by){ R(x-20,by-14,40,3,'#8a6a4a'); R(x-18,by-11,2,11,'#6b4a2a'); R(x+16,by-11,2,11,'#6b4a2a'); R(x-10,by-17,20,3,'#b4b8c8'); R(x-9,by-33,18,16,'#2d3250'); R(x-7,by-31,14,12,'#7ab7ff'); R(x-6,by-30,6,4,'#fff'); R(x+1,by-29,5,7,'#ffd34e'); },
+  phone(x,by){ R(x-10,by-46,20,38,'#1b1745'); R(x-8,by-44,16,32,'#8fd3ff'); R(x-6,by-42,12,5,'#fff'); R(x-6,by-35,12,9,'#e8738a'); R(x-6,by-25,5,6,'#ffd34e'); R(x+1,by-25,5,6,'#5fd1b5'); R(x-2,by-8,4,5,'#6b6480'); R(x-9,by-3,18,3,'#6b6480'); },
+  ball(x,by){ R(x-9,by-10,18,10,'#7a5a44'); R(x-9,by-10,18,2,'#a98a64'); disc(x,by-19,9,'#fff'); R(x-2,by-22,4,4,'#222'); R(x-8,by-19,3,3,'#222'); R(x+5,by-19,3,3,'#222'); R(x-4,by-14,3,3,'#222'); R(x+2,by-14,3,3,'#222'); },
+  lamp(x,by){ R(x-1,by-32,2,32,'#6b6480'); R(x-7,by-3,14,3,'#6b6480'); disc(x,by-40,9,'#ffcf5a'); for(let k=0;k<8;k++){ const a=k*.785+time*.6; R(x+Math.round(Math.cos(a)*14),by-40+Math.round(Math.sin(a)*14),2,2,'#ffcf5a'); } disc(x,by-40,5,'#fff0b8'); },
+  coin(x,by){ R(x-9,by-8,18,8,'#7a5a44'); for(let k=0;k<3;k++){ R(x-8,by-12-k*4,16,3,'#f2c14a'); R(x-8,by-12-k*4,16,1,'#fff0b8'); } disc(x,by-30,8,'#f2c14a'); disc(x,by-30,6,'#e0a93a'); R(x-1,by-34,2,8,'#fff0b8'); },
+  vitrine(x,by){ R(x-18,by-14,36,14,'#2a2438'); R(x-18,by-14,36,2,'#e8c15a'); ctx.globalAlpha=.4; R(x-16,by-42,32,28,'#bfe9ff'); ctx.globalAlpha=1; R(x-17,by-43,34,2,'#e8c15a'); R(x-17,by-43,2,30,'#e8c15a'); R(x+15,by-43,2,30,'#e8c15a'); R(x-3,by-22,6,8,'#3a3050'); disc(x,by-27,4,'#e8c15a'); disc(x,by-27,2,'#1d1c3b'); R(x-3,by-33,6,4,'#bff0ff'); if(Math.sin(time*4+x)>.6){ R(x+5,by-36,1,5,'#fff'); R(x+3,by-34,5,1,'#fff'); } },
+  gift(x,by){ R(x-12,by-20,24,20,'#d64545'); R(x-13,by-24,26,5,'#e8554f'); R(x-2,by-24,4,24,'#ffd34e'); R(x-5,by-29,5,5,'#ffd34e'); R(x+1,by-29,5,5,'#ffd34e'); R(x-12,by-8,24,2,'#a83232'); },
+  envelope(x,by){ R(x-14,by-14,28,14,'#7a5a44'); R(x-11,by-30,22,16,'#fff7e0'); for(let r=0;r<7;r++){ const w=22-r*3; R(x-w/2,by-30+r,Math.max(2,w),1,'#e8d9b5'); } R(x-1,by-24,2,2,'#d64545'); R(x-3,by-25,2,2,'#d64545'); R(x+1,by-25,2,2,'#d64545'); },
+  podium(x,by){ R(x-12,by-28,24,28,'#4a3a5a'); R(x-14,by-30,28,3,'#e8c15a'); R(x-8,by-20,16,2,'#e8c15a'); R(x-8,by-14,16,2,'#e8c15a'); R(x+3,by-44,1,14,'#2c2745'); R(x+1,by-48,5,5,'#222'); R(x+2,by-47,3,1,'#9aa'); },
+  mailbox(x,by){ R(x-1,by-22,2,22,'#6b6480'); R(x-12,by-38,24,18,'#2f6fb5'); R(x-12,by-38,24,3,'#5fa0e8'); R(x-8,by-30,16,2,'#0b2a4a'); R(x+12,by-38,2,10,'#d64545'); R(x+12,by-38,6,3,'#d64545'); R(x-6,by-42,10,6,'#fff'); R(x-5,by-40,8,1,'#c9d3e6'); },
+  newsstand(x,by){ R(x-16,by-32,32,5,'#c0392b'); for(let k=0;k<8;k++) R(x-16+k*4,by-27,4,2,k%2?'#fff':'#c0392b'); R(x-14,by-26,28,26,'#8a6a4a'); R(x-12,by-24,11,16,'#f2f2f2'); R(x-10,by-22,7,2,'#333'); R(x-10,by-18,7,1,'#999'); R(x-10,by-15,7,1,'#999'); R(x+1,by-24,11,14,'#ffe9b0'); R(x+3,by-21,7,2,'#333'); },
+  bus(x,by){ R(x-20,by-26,40,20,'#ffcc33'); R(x-20,by-12,40,2,'#e29b00'); for(let k=0;k<5;k++) R(x-17+k*8,by-23,6,7,'#9bd0ea'); R(x+16,by-23,4,8,'#9bd0ea'); disc(x-11,by-6,4,'#222'); disc(x+11,by-6,4,'#222'); disc(x-11,by-6,1,'#aaa'); disc(x+11,by-6,1,'#aaa'); R(x-20,by-30,40,4,'#e29b00'); },
+  calendar(x,by){ R(x-14,by-40,28,34,'#fff'); R(x-14,by-40,28,8,'#d64545'); R(x-8,by-43,2,5,'#6b6480'); R(x+6,by-43,2,5,'#6b6480'); for(let r=0;r<3;r++) for(let c=0;c<5;c++) R(x-11+c*5,by-28+r*6,3,3,(r===2&&c===3)?'#d64545':'#b7b2c8'); R(x-12,by-6,24,3,'#6b4a2a'); R(x-12,by-6,2,6,'#6b4a2a'); R(x+10,by-6,2,6,'#6b4a2a'); },
+  mascot(x,by){ R(x-11,by-20,22,16,'#1f9d55'); R(x-8,by-16,16,10,'#fff'); R(x-14,by-18,4,12,'#1f9d55'); R(x+10,by-18,4,12,'#1f9d55'); R(x-7,by-4,5,4,'#333'); R(x+2,by-4,5,4,'#333'); disc(x,by-30,9,'#f6d2b0'); R(x-9,by-38,18,5,'#d64545'); R(x-4,by-31,2,3,'#222'); R(x+2,by-31,2,3,'#222'); R(x-3,by-26,6,1,'#c0392b'); },
+  standee(x,by){ R(x-12,by-52,24,50,'#1f4fd8'); R(x-12,by-52,24,3,'#b7e03a'); disc(x,by-34,7,'#b7e03a'); disc(x,by-34,3,'#1f4fd8'); R(x-9,by-46,18,3,'#fff'); R(x-9,by-20,8,6,'#4ac0ff'); R(x+1,by-20,8,6,'#fff'); R(x-9,by-12,18,3,'#b7e03a'); R(x-10,by-3,20,3,'#6b6480'); },
+  ledscreen(x,by){ R(x-28,by-50,56,36,'#0b0a1c'); const c=['#1f4fd8','#4ac0ff','#b7e03a','#ffffff']; for(let k=0;k<6;k++){ const h=8+Math.round(Math.abs(Math.sin(time*2+k))*16); R(x-24+k*8,by-18-h,6,h,c[k%4]); } R(x-28,by-50,56,2,'#6b6480'); R(x-3,by-14,6,14,'#6b6480'); R(x-12,by-3,24,3,'#6b6480'); },
+  monitor(x,by){ R(x-18,by-38,36,26,'#2d3250'); R(x-16,by-36,32,22,'#e9f4ff'); R(x-16,by-36,32,6,'#1f4fd8'); R(x-14,by-27,14,5,'#b7e03a'); R(x-14,by-20,6,4,'#4ac0ff'); R(x-6,by-20,6,4,'#4ac0ff'); R(x+2,by-20,6,4,'#4ac0ff'); R(x+2,by-27,12,5,'#cfd8ee'); R(x-2,by-12,4,8,'#6b6480'); R(x-10,by-4,20,3,'#6b6480'); },
+  booth(x,by){ R(x-22,by-52,2,52,'#6b6480'); R(x+20,by-52,2,52,'#6b6480'); for(let r=0;r<10;r++){ const w=44+r; R(x-w/2,by-54+r,w,1,r%2?'#fff':'#1f6fb5'); } R(x-20,by-18,40,14,'#fff'); R(x-20,by-8,40,4,'#1f6fb5'); R(x-16,by-30,10,10,'#b7e03a'); R(x+4,by-30,12,8,'#4ac0ff'); R(x-4,by-26,6,6,'#fff'); },
+  arcade(x,by){ R(x-11,by-46,22,46,'#5a3fa8'); R(x-8,by-42,16,16,'#0b0a1c'); R(x-3,by-36+Math.round(Math.sin(time*5)*2),4,4,'#ffd34e'); R(x+3,by-34,4,2,'#d64545'); R(x-8,by-24,16,5,'#3d2a80'); disc(x-4,by-21,2,'#ff5a5a'); R(x+2,by-22,2,2,'#5fd1b5'); R(x+5,by-22,2,2,'#ffd34e'); R(x-9,by-4,18,4,'#3d2a80'); },
+  sign(x,by){ R(x-1,by-44,3,44,'#6b6480'); R(x-14,by-44,26,9,'#1f6fb5'); R(x-12,by-42,16,2,'#fff'); R(x-10,by-32,26,9,'#b7e03a'); R(x-8,by-30,16,2,'#1f4fd8'); R(x-9,by-3,18,3,'#6b6480'); },
+  lighthouse(x,by){ for(let r=0;r<34;r++){ const w=14-Math.round(r*.12)+2; R(x-w/2,by-36+r,w,1,Math.floor(r/6)%2?'#2a2438':'#f4f1e6'); } R(x-8,by-40,16,5,'#6b6480'); R(x-5,by-47,10,7,'#ffd34e'); R(x-1,by-50,2,3,'#6b6480'); R(x-7,by-3,14,3,'#6b6480'); ctx.globalAlpha=.18+.1*Math.sin(time*3); disc(x,by-44,16,'#fff0b8'); ctx.globalAlpha=1; },
+  board(x,by){ R(x-1,by-24,2,24,'#6b6480'); R(x-12,by-38,24,16,'#6b4a2a'); R(x-10,by-36,20,12,'#fff7e0'); R(x-8,by-33,16,1,'#c9a24a'); R(x-8,by-30,12,1,'#cbb98a'); R(x-8,by-27,14,1,'#cbb98a'); R(x-8,by-3,16,3,'#6b6480'); }
+};
+const PROPH={trophy:34,diploma:44,pinboard:48,plane:48,shelf:50,laptop:34,phone:48,ball:30,lamp:50,coin:40,vitrine:44,gift:30,envelope:32,podium:48,mailbox:42,newsstand:34,bus:30,calendar:44,mascot:40,standee:54,ledscreen:50,monitor:40,booth:54,arcade:46,sign:46,lighthouse:52,board:38};
+function drawRoom(){
+  const z=Z[room.z], th=THEME[z.type]||THEME.bank2, ws=z.gallery.works, dark=th.dark;
+  R(0,0,W,BASE-2,th.wall);
+  wallDeco(z.type,cam);
+  R(0,0,W,6,dark); R(0,6,W,1,shade(dark,.3));
+  const dk=z.type==='jewelry'||z.type==='bank2';
+  R(0,BASE-16,W,2,dk?'#e8c15a':'#f6e7cf'); R(0,BASE-14,W,12,dk?shade(th.wall,.4):shade(z.color,.4));
+  R(0,BASE-2,W,H-BASE+2,th.floor); R(0,BASE-2,W,2,'rgba(0,0,0,.35)');
+  for(let i=Math.floor(cam/24)-1;i<=Math.floor((cam+W)/24)+1;i++) R(i*24-cam,BASE,1,H-BASE,th.line);
+  R(0,BASE+16,W,1,th.line); R(0,BASE+32,W,1,th.line);
+  /* cửa ra */
+  const ex=26-cam;
+  R(ex-12,BASE-48,24,48,'#5b3f2b'); R(ex-10,BASE-46,20,46,'#7a5a44'); R(ex+6,BASE-24,2,3,'#ffd34e');
+  R(ex-11,BASE-60,22,9,'#2f9d6a');
+  ctx.save(); ctx.fillStyle='#fff'; ctx.font='700 6px "Chakra Petch",system-ui,sans-serif'; ctx.textAlign='center'; ctx.fillText('RA',Math.round(ex),BASE-53); ctx.restore();
+  /* đồ vật = dự án */
+  const by=BASE+8;
+  for(let k=0;k<ws.length;k++){
+    const w=ws[k], cx=Math.round(110+k*GAP-cam); if(cx<-60||cx>W+60) continue;
+    const near=target&&target.kind==='work'&&target.k===k, got=seen.has(room.z+':'+k), fn=PROP[w.kind]||PROP.board, ph=PROPH[w.kind]||40;
+    R(cx-16,by-1,32,3,'rgba(0,0,0,.18)');
+    fn(cx,by);
+    if(near){ ctx.globalAlpha=.9; R(cx-18,by-ph-12+Math.round(Math.sin(time*6)*2),1,1,'#ffd34e'); ctx.globalAlpha=1; const ay=by-ph-9+Math.round(Math.sin(time*6)*2); R(cx-3,ay,6,2,'#ffd34e'); R(cx-2,ay+2,4,2,'#ffd34e'); R(cx-1,ay+4,2,2,'#ffd34e'); }
+    else if(got){ R(cx-5,by-ph-10,10,10,'#2f9d6a'); R(cx-3,by-ph-6,2,2,'#fff'); R(cx-1,by-ph-4,2,2,'#fff'); R(cx+1,by-ph-6,2,2,'#fff'); R(cx+2,by-ph-8,1,2,'#fff'); }
+    else { const sy=by-ph-8+Math.round(Math.sin(time*3+k)*2); R(cx-1,sy-4,2,8,'#ffd34e'); R(cx-4,sy-1,8,2,'#ffd34e'); R(cx-2,sy-2,4,4,'#fff3b0'); }
+    ctx.save(); ctx.font='700 5px "Chakra Petch",system-ui,sans-serif'; ctx.textAlign='center'; ctx.textBaseline='alphabetic';
+    const lab=w.t.length>30?w.t.slice(0,29)+'…':w.t, tw=Math.ceil(ctx.measureText(lab).width)+6;
+    ctx.fillStyle='rgba(19,17,43,.82)'; ctx.fillRect(Math.round(cx-tw/2),BASE+22,tw,8); ctx.fillStyle=near?'#ffd34e':'#f6f0e4'; ctx.fillText(lab,cx,BASE+28); ctx.restore();
+  }
+  drawPlayer();
+}
+function draw(){
+  ctx.setTransform(SC,0,0,SC,0,0); ctx.imageSmoothingEnabled=false;
+  cam=Math.round(camS);
+  if(room){ drawRoom(); veil(); return; }
+  const p=clamp(px/WW,0,1), n=clamp((p-.7)/.3,0,1);
+  drawCity(p,n);
+  for(let i=0;i<Math.ceil(WW/110);i++){ const lx=40+i*110-cam; if(lx>-8&&lx<W+8) lamp(lx,n); }
+
+  /* buildings */
+  for(let i=0;i<N;i++){
+    const bx=sx(i)+15-cam; if(bx>W+4||bx<-200) continue;
+    const topY=BUILD[Z[i].type](bx,Z[i],n);
+    { const dx=Math.round(bx+DOORT[Z[i].type]), dy=BASE-34+Math.round(Math.sin(time*4)*2); R(dx-3,dy,6,2,'#ffd34e'); R(dx-2,dy+2,4,2,'#ffd34e'); R(dx-1,dy+4,2,2,'#ffd34e'); }
+    if(visited[i]&&opened[i]) star(bx+Math.round(BSZ[Z[i].type].w/2),topY-8);
+  }
+
+  /* things */
+  gate(WW-95-cam);
+  for(let i=0;i<N;i++){
+    const nx=npcX(i), x=nx-cam; if(x<-10||x>W+10) continue;
+    const z=Z[i];
+    if(!drawNpc(x,z,i,nx)) personS(x,FEET,{skin:'#f1c9a0',hair:z.npc.hair,shirt:z.npc.shirt,pants:'#3b3556',dir:px<nx?-1:1,t:time},3);
+    if(!visited[i]){ const b=Math.round(Math.sin(time*5)*2);
+      R(x-5,FEET-48+b,10,9,'#fff'); R(x-1,FEET-39+b,2,2,'#fff'); R(x-1,FEET-46+b,2,4,'#c0392b'); R(x-1,FEET-41+b,2,1,'#c0392b'); }
+  }
+  if(cut){ const t=cut.t; if(!(state==='cut'&&t<3.4)) drawPlayer(); /* người đứng trên vỉa hè, xe chạy ngoài đường ở gần camera hơn nên vẽ sau */ if(t<CUT_END+.4&&busLeft(t)<W&&t>.3) drawBus(busLeft(t),t,t>3.2&&t<4.6,!!cut.moving); } else drawPlayer();
+
+  for(const q of parts){ ctx.globalAlpha=clamp(q.life*2,0,1); R(q.x-cam,q.y,2,2,q.c); }
+  ctx.globalAlpha=1;
+
+  if(n>0){ ctx.fillStyle='rgba(20,16,60,'+(n*.22).toFixed(3)+')'; ctx.fillRect(0,0,W,H); }
+  veil();
+  if(cut) drawCutOverlay();
+}
+
+/* ---------- dialog ---------- */
+const dialogEl=$('dialog'), whoEl=$('who'), txtEl=$('txt'), chipsEl=$('chips'), nextEl=$('next');
+const promptEl=$('prompt'), promptTxt=$('promptTxt'), introEl=$('intro');
+function revealChips(page){
+  chipsEl.innerHTML='';
+  if(page.chips&&page.chips.length){
+    page.chips.forEach(c=>{ const li=document.createElement('li'); li.textContent=subst(c); chipsEl.appendChild(li); });
+    chipsEl.hidden=false;
+  }
+}
+function showPage(){
+  const page=dlg.pages[dlg.idx];
+  dlg.full=subst(page.text); dlg.shown=reduce?dlg.full.length:0;
+  chipsEl.hidden=true; chipsEl.innerHTML='';
+  nextEl.textContent=dlg.idx===dlg.pages.length-1?'Đóng ▸':'Tiếp ▸';
+  txtEl.textContent=dlg.full.slice(0,Math.floor(dlg.shown));
+  if(dlg.shown>=dlg.full.length) revealChips(page);
+}
+function openDialog(speaker,pages,onDone){
+  dlg={speaker:speaker,pages:pages,idx:0,onDone:onDone};
+  state='dialog'; whoEl.textContent=speaker; dialogEl.hidden=false; promptEl.hidden=true; $('stage').classList.add('talking'); showPage();
+}
+function advance(){
+  if(state!=='dialog'||!dlg) return; sfx('blip');
+  if(dlg.shown<dlg.full.length){ dlg.shown=dlg.full.length; txtEl.textContent=dlg.full; revealChips(dlg.pages[dlg.idx]); return; }
+  dlg.idx++;
+  if(dlg.idx>=dlg.pages.length){ const done=dlg.onDone; dlg=null; dialogEl.hidden=true; $('stage').classList.remove('talking'); clearSpecial(); state='play'; if(done) done(); }
+  else showPage();
+}
+/* ---------- vào/ra phòng triển lãm + hộp xem ảnh ---------- */
+function goFade(mid){ state='busy'; promptEl.hidden=true; fade={t:0,mid:mid,swapped:false}; }
+function enterRoom(i){ goFade(()=>{ opened[i]=true; refresh(); outPx=px; outCam=camS; room=makeRoom(i); px=60; camS=0; face=1; special=null;
+  $('zName').textContent=Z[i].gallery.title; $('zYears').textContent=Z[i].name+' · '+Z[i].years; }); }
+function leaveRoom(){ goFade(()=>{ const i=room.z; room=null; px=outPx; camS=outCam; face=-1; zi=-3; special=null; }); }
+const csEl=$('cs'), csBody=$('csBody');
+let csZ=0, csK=0, lbList=[], lbK=0;
+const esc=t=>String(t==null?'':t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function openCase(z,k){ sfx('open');
+  const w=Z[z].gallery.works[k]; csZ=z; csK=k; seen.add(z+':'+k); refresh(); lbList=[];
+  const img=(key,cap)=>{ const n=lbList.push({i:key,c:cap})-1; return '<img src="works/'+key+'_m.webp" data-n="'+n+'" alt="'+esc(cap)+'" loading="lazy">'; };
+  let h='<div class="cs-tag">'+esc(w.tag||'')+'</div><h2>'+esc(w.t)+'</h2>';
+  if(w.intro) h+='<p class="cs-intro">'+esc(w.intro)+'</p>';
+  if(w.stats) h+='<div class="cs-stats">'+w.stats.map(x=>'<div><b>'+esc(x[0])+'</b><span>'+esc(x[1])+'</span></div>').join('')+'</div>';
+  if(w.note) h+='<p class="cs-note">'+esc(w.note)+'</p>';
+  if(w.cover&&!(w.sections||[]).some(sc=>(sc.imgs||[]).some(x=>x[0]===w.cover))) h+='<div class="cs-hero">'+img(w.cover,w.t)+'</div>';
+  if(w.tags) h+='<div class="cs-meta">'+w.tags.map(x=>'<span>'+esc(x)+'</span>').join('')+'</div>';
+  if(w.facts) h+='<dl class="cs-facts">'+w.facts.map(x=>'<dt>'+esc(x[0])+'</dt><dd>'+esc(x[1])+'</dd>').join('')+'</dl>';
+  if(w.list) h+='<ul class="cs-list">'+w.list.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul>';
+  (w.sections||[]).forEach(sec=>{
+    h+='<section class="cs-sec"><div class="hd">'+(sec.n?'<i>'+esc(sec.n)+'</i>':'')+'<h3>'+esc(sec.h)+'</h3></div>'+(sec.p?'<p>'+esc(sec.p)+'</p>':'');
+    if(sec.imgs&&sec.imgs.length){ const n=sec.imgs.length;
+      h+='<div class="cs-grid'+(n===1?' n1':'')+'" style="column-count:'+Math.min(n,n>6?4:3)+'">'+sec.imgs.map(x=>'<figure>'+img(x[0],x[1])+'<figcaption>'+esc(x[1])+'</figcaption></figure>').join('')+'</div>'; }
+    h+='</section>';
+  });
+  csBody.innerHTML=h; csBody.scrollTop=0;
+  $('csRoom').textContent=Z[z].gallery.title+' · '+(k+1)+'/'+Z[z].gallery.works.length;
+  state='view'; promptEl.hidden=true; csEl.hidden=false; try{ csBody.focus({preventScroll:true}); }catch(_){}
+}
+function closeCase(){ sfx('close'); csEl.hidden=true; csBody.innerHTML=''; if(state==='view') state='play'; }
+csBody.addEventListener('click',e=>{ const t=e.target; if(t&&t.dataset&&t.dataset.n!=null&&t.tagName==='IMG') showLb(+t.dataset.n); });
+$('csX').addEventListener('click',closeCase);
+const lbEl=$('lb'), lbImg=$('lbImg'), lbNote=$('lbNote');
+function showLb(k){ sfx('tick');
+  const w=lbList[k]; if(!w) return; lbK=k; lbEl.hidden=false;
+  $('lbRoom').textContent=Z[csZ].gallery.works[csK].t+' · '+(k+1)+'/'+lbList.length;
+  $('lbT').textContent=w.c; $('lbD').textContent='';
+  lbNote.hidden=true; lbImg.hidden=false; lbImg.alt=w.c; lbImg.src='works/'+w.i+'_L.webp';
+  $('lbP').disabled=k===0; $('lbN').disabled=k===lbList.length-1;
+  [k-1,k+1].forEach(j=>{ const o=lbList[j]; if(o){ const im=new Image(); im.src='works/'+o.i+'_L.webp'; } });
+}
+function closeLb(){ lbEl.hidden=true; try{ csBody.focus({preventScroll:true}); }catch(_){} }
+function stepLb(d){ const n=lbK+d; if(n>=0&&n<lbList.length) showLb(n); }
+$('lbX').addEventListener('click',closeLb);
+$('lbP').addEventListener('click',()=>stepLb(-1));
+$('lbN').addEventListener('click',()=>stepLb(1));
+
+function interact(t){
+  if(t.kind==='door'){ sfx('door'); enterRoom(t.z); }
+  else if(t.kind==='exit'){ sfx('door2'); leaveRoom(); }
+  else if(t.kind==='work'){ openCase(t.z,t.k); }
+  else if(t.kind==='npc'){
+    const z=Z[t.z];
+    face=px<t.x?1:-1; playSpecial('talk'); talkNpc.i=t.z;
+    sfx('blip'); openDialog(z.npc.name,z.npc.lines.map(l=>({text:l})),()=>{ if(!visited[t.z]) sfx('star'); visited[t.z]=true; refresh(); offerGame(t.z); });
+  } else {
+    const v=visited.filter(Boolean).length, c=opened.filter(Boolean).length;
+    playSpecial('celebrate'); sfx('win');
+    openDialog('Chặng kế tiếp',[
+      {text:(allB()?'Bạn đã gom đủ 6 huy hiệu! Khu đất "?" đã sáng đèn, sẵn sàng cho chặng tiếp theo. ':'Huy hiệu mini-game: '+gotN()+'/6. ')+'Bạn đã ghé '+v+'/'+N+' điểm đến, vào '+c+'/'+N+' phòng triển lãm và xem '+seen.size+'/'+TOTAL+' dự án.'+(v+c<N*2?' Quay lại nếu muốn xem thêm nhé.':' Bạn đã xem hết những chặng đã đi qua.')},
+      {text:CONFIG.ending.text,chips:CONFIG.ending.contacts}
+    ]);
+  }
+}
+
+/* ---------- HUD ---------- */
+const chaptersEl=$('chapters'), chapBtns=[];
+Z.forEach((z,i)=>{
+  const b=document.createElement('button'); b.type='button';
+  b.innerHTML='<span class="n">'+(i+1)+'</span>'; b.appendChild(document.createTextNode(z.short));
+  b.addEventListener('click',()=>{ b.blur(); if(state!=='play') return; sfx('click'); if(room){ room=null; zi=-3; } px=sx(i)+15+DOORT[z.type]-45; camS=clamp(px-W/2,0,WW-W); });
+  chaptersEl.appendChild(b); chapBtns.push(b);
+});
+function refresh(){
+  $('stV').textContent=visited.filter(Boolean).length+'/'+N;
+  $('stW').textContent=seen.size+'/'+TOTAL; if(typeof gotN==='function') $('stB').textContent=gotN()+'/6';
+  chapBtns.forEach((b,i)=>{ b.classList.toggle('done',visited[i]&&opened[i]); b.classList.toggle('cur',zi===i); });
+}
+function setZone(z){
+  zi=z;
+  if(z<0){ $('zName').textContent='Xuất phát'; $('zYears').textContent='Mỗi điểm đến là một chặng của hành trình'; }
+  else if(z>=N){ $('zName').textContent='Chặng tiếp theo'; $('zYears').textContent='Còn để trống, có thể là công ty của bạn'; }
+  else { $('zName').textContent=Z[z].name; $('zYears').textContent=Z[z].years; }
+  refresh();
+}
+
+/* ---------- cutscene mở đầu: xe buýt thả nhân vật xuống thành phố ---------- */
+let cut=null, stepT=0;
+/* NPC dạng ảnh (assets/n/*.png: mỗi file là một dải khung) */
+const NSZ={"cw": 112, "ch": 100, "n": {"school": {"n": 6, "idle": 0, "blink": 1, "talk": [4, 5, 0], "wave": [2, 3]}, "english": {"n": 5, "idle": 0, "blink": null, "talk": [3, 4, 0], "wave": [1, 2]}, "jewelry": {"n": 5, "idle": 0, "blink": 1, "talk": [3, 2, 0], "wave": [2, 4]}, "bank": {"n": 5, "idle": 0, "blink": 1, "talk": [2, 4, 0], "wave": [3, 4]}, "bank2": {"n": 5, "idle": 0, "blink": 1, "talk": [3, 2, 0], "wave": [2, 4]}, "market": {"n": 5, "idle": 0, "blink": 1, "talk": [2, 4, 0], "wave": [3, 4]}}};
+const NSP={}, talkNpc={i:-1};
+Object.keys(NSZ.n).forEach(k=>{ const o={img:new Image(),ok:false}; o.img.onload=()=>{ o.ok=true; }; o.img.src='assets/n/'+k+'.png'; NSP[k]=o; });
+function drawNpc(x,z,i,nx){
+  const k=z.type, sp=NSP[k], c=NSZ.n[k];
+  if(!sp||!sp.ok||!c) return false;
+  let f=c.idle;
+  if(state==='dialog'&&talkNpc.i===i) f=c.talk[Math.floor(time*4)%c.talk.length];
+  else if(!visited[i]&&Math.abs(px-nx)<80) f=c.wave[Math.floor(time*3)%c.wave.length];
+  else if(c.blink!=null&&((time*1000+i*700)%3600)<150) f=c.blink;
+  R(x-6,FEET-1,12,2,'rgba(0,0,0,.25)');
+  ctx.save(); ctx.setTransform(1,0,0,1,0,0); ctx.translate(Math.round(x*SC),FEET*SC);
+  if(px>nx) ctx.scale(-1,1);
+  ctx.drawImage(sp.img,f*NSZ.cw,0,NSZ.cw,NSZ.ch,-NSZ.cw/2,-NSZ.ch,NSZ.cw,NSZ.ch);
+  ctx.restore(); ctx.setTransform(SC,0,0,SC,0,0); return true;
+}
+const eo=u=>1-Math.pow(1-clamp(u,0,1),3);
+const CUT_END=6.6, CUT_BARS=.6, DOOR_PX=52, END_PX=96;
+function startCut(){
+  introEl.hidden=true; promptEl.hidden=true; $('stage').classList.add('talking');
+  if(matchMedia('(prefers-reduced-motion: reduce)').matches){ px=END_PX; endCut(); return; }
+  state='cut'; cut={t:0,waved:false}; px=DOOR_PX; face=1; moving=false; special=null;
+}
+function endCut(){ engine(false);
+  px=END_PX; face=1; moving=false; state='play'; $('stage').classList.remove('talking'); playSpecial('wave');
+  if(cut) cut.t=Math.max(cut.t,CUT_END);   /* để thanh đen trượt ra */
+}
+function busLeft(t){
+  if(t<5.0) return -92+(8+92)*eo((t-.4)/2.5);
+  const u=t-5.0; return 8+u*u*70+u*10;
+}
+function cutUpdate(dt){
+  cut.t+=dt; const t=cut.t;
+  const arriving=t>.4&&t<2.9, leaving=t>5.0;
+  if(t>3.4&&t<4.4){ px=DOOR_PX+(END_PX-DOOR_PX)*clamp((t-3.4)/1,0,1); moving=true; face=1; walk+=dt; } else moving=false;
+  if(t>=4.4&&!cut.waved){ cut.waved=true; px=END_PX; playSpecial('wave'); }
+  cut.moving=arriving||leaving;
+  const f=cut.f||(cut.f={});
+  if(t>.4&&!f.e1){ f.e1=1; engine(true,1); }
+  if(t>2.2&&!f.sq){ f.sq=1; sfx('squeal'); }
+  if(t>2.9&&!f.e0){ f.e0=1; engine(true,.7); }
+  if(t>3.2&&!f.d1){ f.d1=1; sfx('hiss'); }
+  if(t>4.6&&!f.d2){ f.d2=1; sfx('hiss'); }
+  if(t>5.0&&!f.e2){ f.e2=1; engine(true,1.7); }
+  if(t>6.0&&!f.e3){ f.e3=1; engine(false); }
+  if((arriving&&Math.random()<dt*14)||(leaving&&Math.random()<dt*24)) parts.push({x:busLeft(t)+(leaving?2:6),y:FEET+11,vx:-14-Math.random()*16,vy:-8-Math.random()*8,life:.5,c:'#e4dcd0'});
+  if(t>=CUT_END&&state==='cut') endCut();
+}
+function drawBus(left,t,doorOpen,moving){
+  const by=FEET+11, bob=moving?Math.round(Math.sin(time*26)*.6):0, x=Math.round(left), y=by-30+bob;
+  R(x-2,by,78,3,'rgba(0,0,0,.22)');
+  R(x,y,72,29,'#f6f2ea'); R(x,y,72,2,'#dcd5c8'); R(x+1,y-4,40,4,'#d8d2c6'); R(x+8,y-6,12,2,'#bfb8ac');            /* thân + máy lạnh nóc */
+  R(x,y+20,72,5,'#2c9f6e'); R(x,y+19,72,1,'#1c7a52'); R(x,y+25,72,4,'#2d3b48');                                    /* sọc xanh + gầm */
+  for(let k=0;k<5;k++){ R(x+4+k*9,y+4,7,10,'#9fd0e6'); R(x+4+k*9,y+4,7,2,'#c9e8f5'); }                           /* cửa sổ */
+  R(x+49,y+3,13,19,doorOpen?'#3d4a57':'#8fc3d8'); if(!doorOpen) R(x+55,y+3,1,19,'#5a8aa0'); else R(x+49,y+3,2,19,'#8fc3d8');   /* cửa lên xuống */
+  R(x+64,y+3,8,14,'#7fbfdc'); R(x+64,y+3,3,14,'#b6e0f0');                                                         /* kính chắn gió */
+  R(x+60,y-3,12,5,'#1a1a22'); ctx.save(); ctx.font='700 4px "Chakra Petch",sans-serif'; ctx.fillStyle='#ff9d2e'; ctx.fillText('TP.HCM',x+61,y+1); ctx.restore();
+  R(x+69,y+21,3,3,'#ffe27a'); if(moving) { ctx.globalAlpha=.25; R(x+72,y+19,14,7,'#fff3b0'); ctx.globalAlpha=1; }
+  for(const wx of [x+12,x+56]){ disc(wx,by-4,6,'#22242b'); disc(wx,by-4,3,'#b9bcc6'); const a=time*(moving?16:0); R(wx+Math.round(Math.cos(a)*2),by-4+Math.round(Math.sin(a)*2),1,1,'#555'); }
+}
+function drawCutOverlay(){
+  const t=cut.t, inn=eo(t/CUT_BARS), out=1-eo((t-CUT_END)/CUT_BARS), bar=Math.round(11*Math.min(inn,out));
+  R(0,0,W,bar,'#0b0807'); R(0,H-bar,W,bar,'#0b0807');
+  const fade=1-clamp(t/.9,0,1); if(fade>0){ ctx.globalAlpha=fade; R(0,0,W,H,'#0b0807'); ctx.globalAlpha=1; }
+  const cap=(s,x,y,a,size)=>{ if(a<=0) return; ctx.save(); ctx.globalAlpha=Math.min(1,a); ctx.fillStyle='#fbf0da'; ctx.font='700 '+size+'px "Chakra Petch",sans-serif'; ctx.textBaseline='alphabetic'; ctx.fillText(s,x,y); ctx.restore(); };
+  if(bar>8){
+    const line1='Một buổi sáng năm 2019…', line2='TP. Hồ Chí Minh · bắt đầu hành trình';
+    const n1=Math.floor(clamp((t-.9)/1.2,0,1)*line1.length), n2=Math.floor(clamp((t-3.4)/1.3,0,1)*line2.length);
+    cap(line1.slice(0,n1),10,H-3,t<2.9?1:clamp(1-(t-2.9)*2,0,1),9);
+    cap(line2.slice(0,n2),10,H-3,t<5.6?1:clamp(1-(t-5.6)*3,0,1),9);
+    cap('Bỏ qua · E',W-50,H-3,.7,6);
+  }
+}
+
+/* ---------- âm thanh: tổng hợp bằng Web Audio, không dùng file ---------- */
+const AU={ctx:null,master:null,mus:null,fx:null,noise:null,eng:null,vol:{music:.5,sfx:.8,mute:false}};
+try{ const v=JSON.parse(localStorage.getItem('htsn-audio')||'null'); if(v&&typeof v==='object'){ AU.vol.music=clamp(+v.music,0,1)||0; AU.vol.sfx=clamp(+v.sfx,0,1)||0; AU.vol.mute=!!v.mute; if(v.music===undefined) AU.vol.music=.5; if(v.sfx===undefined) AU.vol.sfx=.8; } }catch(_){}
+function auSave(){ try{ localStorage.setItem('htsn-audio',JSON.stringify(AU.vol)); }catch(_){} }
+function auApply(){ if(!AU.ctx) return; const m=AU.vol.mute?0:1, t=AU.ctx.currentTime; AU.mus.gain.setTargetAtTime(m*AU.vol.music*.35,t,.05); AU.fx.gain.setTargetAtTime(m*AU.vol.sfx,t,.05); }
+function auInit(){
+  if(AU.ctx){ if(AU.ctx.state==='suspended') AU.ctx.resume(); return; }
+  try{
+    const C=window.AudioContext||window.webkitAudioContext; if(!C) return; const c=AU.ctx=new C();
+    AU.master=c.createGain(); AU.master.gain.value=.9; AU.master.connect(c.destination);
+    AU.mus=c.createGain(); AU.mus.connect(AU.master); AU.fx=c.createGain(); AU.fx.connect(AU.master);
+    const b=c.createBuffer(1,c.sampleRate,c.sampleRate), d=b.getChannelData(0); for(let i=0;i<d.length;i++) d[i]=Math.random()*2-1; AU.noise=b;
+    auApply(); musicStart();
+  }catch(_){ AU.ctx=null; }
+}
+function tone(f,dur,type,vol,when,to){
+  const c=AU.ctx; if(!c) return; const t=c.currentTime+(when||0), o=c.createOscillator(), g=c.createGain();
+  o.type=type||'square'; o.frequency.setValueAtTime(f,t); if(to) o.frequency.exponentialRampToValueAtTime(to,t+dur);
+  g.gain.setValueAtTime(0,t); g.gain.linearRampToValueAtTime(vol,t+.006); g.gain.exponentialRampToValueAtTime(.0001,t+dur);
+  o.connect(g); g.connect(AU.fx); o.start(t); o.stop(t+dur+.02);
+}
+function noiz(dur,vol,fq,when,fq2,q){
+  const c=AU.ctx; if(!c) return; const t=c.currentTime+(when||0), s=c.createBufferSource(), f=c.createBiquadFilter(), g=c.createGain();
+  s.buffer=AU.noise; f.type='bandpass'; f.Q.value=q||.8; f.frequency.setValueAtTime(fq,t); if(fq2) f.frequency.exponentialRampToValueAtTime(fq2,t+dur);
+  g.gain.setValueAtTime(vol,t); g.gain.exponentialRampToValueAtTime(.0001,t+dur); s.connect(f); f.connect(g); g.connect(AU.fx); s.start(t); s.stop(t+dur+.02);
+}
+const SFX={
+  click(){ tone(880,.05,'square',.12); tone(1320,.06,'square',.1,.04); },
+  step(){ noiz(.05,.35,260+Math.random()*120); tone(90+Math.random()*20,.04,'triangle',.18); },
+  talk(){ tone(300+Math.random()*220,.045,'square',.07); },
+  blip(){ tone(520,.07,'square',.12); tone(780,.09,'square',.1,.06); },
+  door(){ noiz(.35,.28,500,0,160); tone(392,.12,'triangle',.18,.12); tone(523,.12,'triangle',.18,.22); tone(659,.2,'triangle',.18,.32); },
+  door2(){ noiz(.3,.25,420,0,140); tone(659,.1,'triangle',.16); tone(494,.16,'triangle',.16,.1); },
+  open(){ [523,659,784,1047].forEach((f,i)=>tone(f,.12,'square',.1,i*.055)); },
+  close(){ [784,659,523].forEach((f,i)=>tone(f,.1,'square',.09,i*.05)); },
+  tick(){ tone(1040,.04,'square',.09); },
+  star(){ [784,988,1175,1568,1976].forEach((f,i)=>tone(f,.16,'square',.09,i*.07)); tone(2349,.4,'triangle',.08,.35); },
+  win(){ [523,659,784,1047,784,1047,1319].forEach((f,i)=>tone(f,.2,'square',.1,i*.11)); tone(262,.8,'triangle',.16,0); },
+  run(){ tone(660,.05,'square',.1); tone(990,.07,'square',.1,.05); },
+  hiss(){ noiz(.45,.3,5200,0,2500,.4); },
+  squeal(){ tone(1500,.35,'sawtooth',.03,0,900); noiz(.35,.08,3600,0,2000,2); },
+  horn(){ tone(311,.28,'sawtooth',.06); tone(392,.28,'sawtooth',.05); }
+};
+function sfx(n){ if(!AU.ctx||AU.vol.mute||AU.vol.sfx<=0) return; try{ SFX[n](); }catch(_){} }
+/* tiếng động cơ xe buýt: sawtooth thấp + LFO rung */
+function engine(on,rev){
+  const c=AU.ctx; if(!c) return; const t=c.currentTime;
+  if(on&&!AU.eng){
+    const o=c.createOscillator(), o2=c.createOscillator(), f=c.createBiquadFilter(), g=c.createGain(), l=c.createOscillator(), lg=c.createGain();
+    o.type='sawtooth'; o2.type='square'; o.frequency.value=46; o2.frequency.value=23; f.type='lowpass'; f.frequency.value=260;
+    l.frequency.value=11; lg.gain.value=.05; l.connect(lg); lg.connect(g.gain); g.gain.value=.12;
+    o.connect(f); o2.connect(f); f.connect(g); g.connect(AU.fx); o.start(); o2.start(); l.start(); AU.eng={o,o2,g,f,l};
+    g.gain.setValueAtTime(0,t); g.gain.linearRampToValueAtTime(.12,t+.3);
+  }
+  if(AU.eng){
+    if(on){ AU.eng.o.frequency.setTargetAtTime(46*(rev||1),t,.3); AU.eng.o2.frequency.setTargetAtTime(23*(rev||1),t,.3); AU.eng.f.frequency.setTargetAtTime(260*(rev||1),t,.3); }
+    else { const e=AU.eng; AU.eng=null; e.g.gain.cancelScheduledValues(t); e.g.gain.setTargetAtTime(0,t,.2); setTimeout(()=>{ try{ e.o.stop(); e.o2.stop(); e.l.stop(); }catch(_){} },900); }
+  }
+}
+/* nhạc nền chiptune nhẹ, lặp 4 ô nhịp (C – Am – F – G) */
+const MEL=[[76,0,72,0,79,0,76,72],[76,0,72,0,81,0,79,76],[77,0,72,0,81,0,77,72],[74,0,79,0,83,0,79,74]], BAS=[48,45,41,43];
+const mf=m=>440*Math.pow(2,(m-69)/12);
+let musTimer=null, musStep=0, musNext=0;
+function musNote(f,dur,type,vol,t){ const c=AU.ctx, o=c.createOscillator(), g=c.createGain(); o.type=type; o.frequency.value=f; g.gain.setValueAtTime(0,t); g.gain.linearRampToValueAtTime(vol,t+.01); g.gain.exponentialRampToValueAtTime(.0001,t+dur); o.connect(g); g.connect(AU.mus); o.start(t); o.stop(t+dur+.03); }
+function musicStart(){
+  if(musTimer||!AU.ctx) return; const E=60/92/2; musNext=AU.ctx.currentTime+.1; musStep=0;
+  musTimer=setInterval(()=>{
+    const c=AU.ctx; if(!c||c.state!=='running') return;
+    while(musNext<c.currentTime+.3){
+      const bar=Math.floor(musStep/8)%4, k=musStep%8, m=MEL[bar][k];
+      if(m) musNote(mf(m),E*1.8,'square',.16,musNext);
+      if(k===0||k===4) musNote(mf(BAS[bar]),E*3.2,'triangle',.42,musNext);
+      if(k%2===1) musNote(mf(BAS[bar]+12+(k===3||k===7?7:0)),E*.7,'triangle',.12,musNext);
+      musNext+=E; musStep=(musStep+1)%32;
+    }
+  },80);
+}
+document.addEventListener('visibilitychange',()=>{ if(!AU.ctx) return; if(document.hidden) AU.ctx.suspend(); else AU.ctx.resume(); });
+['pointerdown','keydown','touchstart'].forEach(ev=>addEventListener(ev,auInit,{passive:true}));
+
+/* ---------- bảng Cài đặt và Giới thiệu ---------- */
+const menuEl=$('menu'), menuBody=$('menuBody'); let menuPrev='play';
+function openMenu(kind){
+  if(state!=='play'&&state!=='intro'||menuEl.hidden===false) return;
+  auInit(); sfx('open'); keys.l=false; keys.r=false; menuPrev=state; state='menu'; promptEl.hidden=true;
+  if(kind==='settings'){
+    $('menuT').textContent='Cài đặt âm thanh';
+    menuBody.innerHTML='<div class="set"><label for="vMus">Nhạc nền</label><input id="vMus" type="range" min="0" max="100" step="5"><output id="oMus"></output></div>'
+      +'<div class="set"><label for="vFx">Hiệu ứng âm thanh</label><input id="vFx" type="range" min="0" max="100" step="5"><output id="oFx"></output></div>'
+      +'<label class="chk"><input id="vMute" type="checkbox"> Tắt toàn bộ âm thanh</label>'
+      +'<div class="menu-btns"><button type="button" class="btn small" id="vTest">Nghe thử hiệu ứng</button></div>'
+      +'<p class="menu-note">Âm thanh được tổng hợp trực tiếp trong trình duyệt. Cài đặt được nhớ cho lần sau.</p>';
+    const sync=()=>{ $('vMus').value=Math.round(AU.vol.music*100); $('vFx').value=Math.round(AU.vol.sfx*100); $('vMute').checked=AU.vol.mute; $('oMus').textContent=$('vMus').value+'%'; $('oFx').textContent=$('vFx').value+'%'; };
+    sync();
+    $('vMus').addEventListener('input',e=>{ AU.vol.music=e.target.value/100; $('oMus').textContent=e.target.value+'%'; auApply(); auSave(); });
+    $('vFx').addEventListener('input',e=>{ AU.vol.sfx=e.target.value/100; $('oFx').textContent=e.target.value+'%'; auApply(); auSave(); });
+    $('vFx').addEventListener('change',()=>sfx('blip'));
+    $('vMute').addEventListener('change',e=>{ AU.vol.mute=e.target.checked; auApply(); auSave(); });
+    $('vTest').addEventListener('click',()=>{ sfx('star'); });
+  } else if(kind==='badges'){ badgeBook();
+  } else {
+    $('menuT').textContent='Về dự án này';
+    menuBody.innerHTML='<h2>Hành trình của '+esc(CONFIG.name)+'</h2><p class="menu-role">'+esc(CONFIG.role)+'</p>'
+      +'<p>Đây là một CV tương tác: mỗi tòa nhà là một chặng trong hành trình. Đi tới cửa, nói chuyện với người giới thiệu, rồi bước vào bên trong để xem các dự án đã thực hiện. Bấm vào đồ vật trong phòng để mở từng dự án.</p>'
+      +'<h3>Điều khiển</h3><dl class="menu-keys"><dt>Máy tính</dt><dd><kbd>←</kbd> <kbd>→</kbd> hoặc <kbd>A</kbd> <kbd>D</kbd> để đi, giữ <kbd>Shift</kbd> để chạy, <kbd>E</kbd> hoặc <kbd>Space</kbd> để tương tác, <kbd>Esc</kbd> để đóng.</dd>'
+      +'<dt>Điện thoại</dt><dd>Giữ nút ◀ ▶ để đi, bấm <b>CHẠY</b> để bật hoặc tắt chạy, nút tròn xanh để tương tác.</dd></dl>'
+      +'<p class="menu-note">Nhảy nhanh tới từng chặng bằng thanh chặng bên dưới màn hình.</p>';
+  }
+  menuEl.hidden=false; try{ menuBody.focus({preventScroll:true}); }catch(_){}
+}
+function closeMenu(){ if(menuEl.hidden) return; menuEl.hidden=true; sfx('close'); state=menuPrev; }
+$('setBtn').addEventListener('click',()=>openMenu('settings'));
+$('aboutBtn').addEventListener('click',()=>openMenu('about'));
+$('menuX').addEventListener('click',closeMenu);
+
+/* ---------- loop ---------- */
+function update(dt){
+  if(state==='cut') cutUpdate(dt); else if(cut&&cut.t<CUT_END+CUT_BARS){ cut.t+=dt; } else if(cut) cut=null;
+  const dir=(keys.r?1:0)-(keys.l?1:0);
+  if(state==='play'&&special==='wave'&&dir!==0) clearSpecial();
+  moving=false;
+  if(state==='play'&&!special&&dir!==0){
+    running=shiftDown||runLatch; moving=true; px=clamp(px+dir*(running?RUN:SPEED)*dt,16,(room?room.w:WW)-16); face=dir; walk+=dt;
+    stepT-=dt; if(stepT<=0){ sfx('step'); stepT=running?.17:.28; }
+  }
+  tickAnim(dt);
+  if(fade){ fade.t+=dt; if(!fade.swapped&&fade.t>=.3){ fade.swapped=true; fade.mid(); } if(fade.t>=.6){ fade=null; if(state==='busy') state='play'; } }
+  const tc=clamp(px-W/2,0,(room?room.w:WW)-W); camS+=(tc-camS)*Math.min(1,dt*8);
+
+  const rel=room?room.z:px<X0-20?-1:(px>=X0+N*ZW-20?N:Math.floor((px-(X0-20))/ZW));
+  if(!room&&rel!==zi) setZone(rel);
+
+  target=null;
+  if(state==='play'){ let best=24; for(const t of (room?room.items:things)){ const d=Math.abs(px-t.x); if(d<best){ best=d; target=t; } } }
+  if(target){
+    promptEl.hidden=false;
+    promptEl.style.left=clamp((target.x-cam)/W*100,12,88)+'%';
+    promptTxt.textContent=target.kind==='npc'?'Nói chuyện':target.kind==='door'?'Vào xem triển lãm':target.kind==='exit'?'Ra ngoài':target.kind==='work'?'Xem: '+Z[target.z].gallery.works[target.k].t.slice(0,34):'Chặng tiếp theo';
+  } else promptEl.hidden=true;
+
+  if(dlg&&dlg.shown<dlg.full.length){
+    const tk=Math.floor(dlg.shown/2); dlg.shown=Math.min(dlg.full.length,dlg.shown+dt*55); if(Math.floor(dlg.shown/2)!==tk) sfx('talk');
+    txtEl.textContent=dlg.full.slice(0,Math.floor(dlg.shown));
+    if(dlg.shown>=dlg.full.length) revealChips(dlg.pages[dlg.idx]);
+  }
+  for(let i=parts.length-1;i>=0;i--){ const q=parts[i]; q.life-=dt; q.x+=q.vx*dt; q.y+=q.vy*dt; q.vy+=90*dt; if(q.life<=0) parts.splice(i,1); }
+}
+let last=0;
+function frame(ts){
+  const dt=Math.min(.05,(ts-last)/1000||0); last=ts; time+=dt;
+  update(dt); if(state==='game'){ try{ mgStep(dt); }catch(err){ console.error(err); closeGame(); } } else draw(); requestAnimationFrame(frame);
+}
+
+/* ---------- input ---------- */
+function act(){
+  if(state==='cut'){ endCut(); return; }
+  if(state==='view'){ if(!lbEl.hidden) closeLb(); else closeCase(); }
+  else if(state==='intro') startGame();
+  else if(state==='ask') askYes();
+  else if(state==='game') gameAct();
+  else if(state==='dialog') advance();
+  else if(state==='play'&&target) interact(target);
+}
+function startGame(){ auInit(); sfx('click'); startCut(); }
+addEventListener('keydown',e=>{
+  const k=e.key; if(k==='Shift') shiftDown=true;
+  if(state==='menu'){ if(k==='Escape'){ e.preventDefault(); closeMenu(); } return; }
+  if(k==='Escape'&&fsOn&&!fsReal&&state==='play'){ e.preventDefault(); exitFs(); return; }
+  if(state==='ask'&&k==='Escape'){ e.preventDefault(); askNo(); return; }
+  if(state==='game'&&k==='Escape'){ e.preventDefault(); closeGame(); return; }
+  if(state==='game'&&mg&&k>='1'&&k<='8'&&mg.numQ){ mg.numQ.push(+k-1); }
+  if(state==='game'&&mg){ const LN={ArrowLeft:0,ArrowDown:1,ArrowUp:2,ArrowRight:3,a:0,A:0,s:1,S:1,w:2,W:2,d:3,D:3}[k]; if(LN!=null){ e.preventDefault(); if(!e.repeat) mg.keyQ.push(LN); } }
+  if(state==='view'){
+    if(!lbEl.hidden){
+      if(k==='ArrowLeft'||k==='a'||k==='A'){ e.preventDefault(); stepLb(-1); }
+      else if(k==='ArrowRight'||k==='d'||k==='D'){ e.preventDefault(); stepLb(1); }
+      else if(k==='Escape'||k==='e'||k==='E'||k===' '||k==='Enter'){ e.preventDefault(); if(!e.repeat) closeLb(); }
+    } else if(k==='Escape'||k==='e'||k==='E'){ e.preventDefault(); if(!e.repeat) closeCase(); }
+    return;
+  }
+  if(k==='ArrowLeft'||k==='a'||k==='A'){ keys.l=true; e.preventDefault(); }
+  else if(k==='ArrowRight'||k==='d'||k==='D'){ keys.r=true; e.preventDefault(); }
+  else if(k==='e'||k==='E'||k===' '||k==='Enter'){
+    if(e.target&&e.target.closest&&e.target.closest('button')) return;
+    e.preventDefault(); if(!e.repeat) act();
+  }
+});
+addEventListener('keyup',e=>{
+  const k=e.key; if(k==='Shift') shiftDown=false;
+  if(mg&&(k===' '||k==='e'||k==='E'||k==='Enter')) mg.kdown=false;
+  if(k==='ArrowLeft'||k==='a'||k==='A') keys.l=false;
+  if(k==='ArrowRight'||k==='d'||k==='D') keys.r=false;
+});
+addEventListener('blur',()=>{ keys.l=false; keys.r=false; shiftDown=false; });
+$('runBtn').addEventListener('pointerdown',e=>{ e.preventDefault(); runLatch=!runLatch; sfx('run'); $('runBtn').classList.toggle('on',runLatch); $('runBtn').setAttribute('aria-pressed',runLatch); });
+$('startBtn').addEventListener('click',startGame);
+$('cv').addEventListener('pointerdown',()=>{ if(state==='cut') endCut(); });
+dialogEl.addEventListener('click',advance);
+promptEl.addEventListener('click',()=>{ promptEl.blur(); act(); });
+document.querySelectorAll('#pad [data-k]').forEach(b=>{
+  const k=b.dataset.k;
+  b.addEventListener('pointerdown',e=>{ e.preventDefault(); keys[k]=true; try{ b.setPointerCapture(e.pointerId); }catch(_){} });
+  ['pointerup','pointercancel','lostpointercapture'].forEach(ev=>b.addEventListener(ev,()=>{ keys[k]=false; }));
+});
+$('actBtn').addEventListener('pointerdown',e=>{ e.preventDefault(); act(); });
+['pointerup','pointercancel','pointerleave'].forEach(ev=>$('actBtn').addEventListener(ev,()=>{ if(mg) mg.kdown=false; }));
+
+/* ============ MINI-GAME + HUY HIỆU ============ */
+const BADGES=[{f:0,n:'Học trò chăm chỉ'},{f:2,n:'Giỏi tiếng Anh'},{f:4,n:'Mắt tinh trang sức'},{f:1,n:'Tân binh ACB'},{f:3,n:'Lan tỏa tuyển dụng'},{f:5,n:'Tài xế vui vẻ'}];
+const got=[false,false,false,false,false,false];
+try{ const b=JSON.parse(localStorage.getItem('htsn-badges')||'[]'); if(Array.isArray(b)) b.forEach((v,i)=>{ if(i<6) got[i]=!!v; }); }catch(_){}
+const gotN=()=>got.filter(Boolean).length, allB=()=>got.every(Boolean);
+function saveBadges(){ try{ localStorage.setItem('htsn-badges',JSON.stringify(got)); }catch(_){} }
+Object.assign(SFX,{
+  pop(){ noiz(.08,.4,1800,0,600,1.2); tone(740,.09,'square',.1,0,1400); },
+  flip(){ tone(420,.05,'square',.08,0,640); },
+  match(){ [784,988,1319].forEach((f,i)=>tone(f,.12,'square',.1,i*.07)); },
+  bad(){ tone(220,.14,'square',.1,0,150); tone(180,.14,'square',.08,.09,120); },
+  catchg(){ tone(1175,.06,'square',.1); tone(1568,.1,'square',.1,.05); },
+  r0(){ tone(523,.12,'square',.1); }, r1(){ tone(659,.12,'square',.1); }, r2(){ tone(784,.12,'square',.1); }, r3(){ tone(988,.12,'square',.1); },
+  badge(){ [523,659,784,1047,1319,1568,2093].forEach((f,i)=>tone(f,.18,'square',.1,i*.09)); tone(262,1,'triangle',.16); tone(392,1,'triangle',.12,.1); }
+});
+const mgEl=$('mg'), mgc=$('mgc'), mx=mgc.getContext('2d'), askEl=$('ask'), toastEl=$('toast');
+mx.imageSmoothingEnabled=true;
+const GI={};
+function G(n){ let o=GI[n]; if(!o){ o={img:new Image(),ok:false}; o.img.onload=()=>{ o.ok=true; }; o.img.src='assets/g/'+n+(n.indexOf('city')===0?'.webp':'.png'); GI[n]=o; } return o; }
+const rnd=(a,b)=>a+Math.random()*(b-a), pick=a=>a[Math.floor(Math.random()*a.length)];
+function shuf(a){ a=a.slice(); for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+function spr(n,x,y,o){ o=o||{}; const g=G(n); if(!g.ok) return; const s=o.s||1, w=g.img.width/2*s, h=g.img.height/2*s, ax=o.ax==null?.5:o.ax, ay=o.ay==null?.5:o.ay;
+  mx.save(); if(o.a!=null) mx.globalAlpha=o.a; mx.translate(Math.round(x),Math.round(y)); if(o.rot) mx.rotate(o.rot); if(o.fl) mx.scale(-1,1); mx.drawImage(g.img,-w*ax,-h*ay,w,h); mx.restore(); }
+function sprFit(n,x,y,mw,mh,o){ const g=G(n); if(!g.ok) return; o=o||{}; const s=Math.min(mw/(g.img.width/2),mh/(g.img.height/2)); spr(n,x,y,Object.assign({},o,{s:s*(o.s||1)})); }
+function mR(x,y,w,h,c){ mx.fillStyle=c; mx.fillRect(Math.round(x),Math.round(y),Math.round(w),Math.round(h)); }
+function mt(t,x,y,size,col,al,out){ mx.save(); mx.font='700 '+size+'px "Chakra Petch","Be Vietnam Pro",system-ui,sans-serif'; mx.textAlign=al||'left'; mx.textBaseline='alphabetic';
+  if(out){ mx.lineWidth=2.4; mx.strokeStyle=out; mx.lineJoin='round'; mx.strokeText(t,Math.round(x),Math.round(y)); } mx.fillStyle=col; mx.fillText(t,Math.round(x),Math.round(y)); mx.restore(); }
+function rr(x,y,w,h,r,fill,stroke,lw){ mx.beginPath(); mx.moveTo(x+r,y); mx.arcTo(x+w,y,x+w,y+h,r); mx.arcTo(x+w,y+h,x,y+h,r); mx.arcTo(x,y+h,x,y,r); mx.arcTo(x,y,x+w,y,r); mx.closePath(); if(fill){ mx.fillStyle=fill; mx.fill(); } if(stroke){ mx.lineWidth=lw||1.5; mx.strokeStyle=stroke; mx.stroke(); } }
+function panel(x,y,w,h){ rr(x,y+2,w,h,6,'#7a4b2a'); rr(x,y,w,h,6,'#fbf0da','#7a4b2a',2); }
+function grad(y0,y1,c0,c1,x,w){ const g=mx.createLinearGradient(0,y0,0,y1); g.addColorStop(0,c0); g.addColorStop(1,c1); mx.fillStyle=g; mx.fillRect(x||0,y0,w||320,y1-y0); }
+function wrapT(t,maxW,size){ mx.font='700 '+size+'px "Chakra Petch","Be Vietnam Pro",system-ui,sans-serif'; const w=t.split(' '), L=[]; let c=''; for(const x of w){ const n=c?c+' '+x:x; if(mx.measureText(n).width>maxW&&c){ L.push(c); c=x; } else c=n; } if(c) L.push(c); return L; }
+const PL={walk:new Image(),cel:new Image()}; PL.walk.src='assets/player_walk.png'; PL.cel.src='assets/player_celebrate.png';
+function kid(x,fy,f,cel,fl){ const im=cel?PL.cel:PL.walk, cw=cel?50:46, ch=cel?71:66; if(!im.complete||!im.naturalWidth) return; mx.save(); mx.translate(Math.round(x),Math.round(fy)); if(fl<0) mx.scale(-1,1); mx.drawImage(im,(Math.floor(f)%(cel?4:6))*cw,0,cw,ch,-cw/4,-ch/2,cw/2,ch/2); mx.restore(); }
+let mg=null, mp=[], mft=[];
+function burst(x,y,n,cols,sp){ for(let i=0;i<n;i++){ const a=Math.random()*6.283, v=rnd(20,sp||70); mp.push({x,y,vx:Math.cos(a)*v,vy:Math.sin(a)*v-25,life:rnd(.4,.9),c:pick(cols),s:rnd(1.5,3)}); } }
+function ftext(x,y,t,col){ mft.push({x,y,t,col,life:.9}); }
+const held=()=>mg&&(mg.down||mg.kdown);
+const stageEl=$('stage');
+function mgPos(e){ const r=mgc.getBoundingClientRect(); let u,v,w,hh; if(stageEl.classList.contains('rot')){ u=e.clientY-r.top; v=r.right-e.clientX; w=r.height; hh=r.width; } else { u=e.clientX-r.left; v=e.clientY-r.top; w=r.width; hh=r.height; }
+  const sc=Math.min(w/320,hh/180), ox=(w-320*sc)/2, oy=(hh-180*sc)/2; return {x:(u-ox)/sc,y:(v-oy)/sc}; }
+/* ---------- toàn màn hình (xoay ngang trên điện thoại) ---------- */
+const fsBtn=$('fsBtn'), padEl=$('pad'); let padPh=null, fsOn=false, fsReal=false, wl=null;
+const fsEl=()=>document.fullscreenElement||document.webkitFullscreenElement;
+function fsApply(){ stageEl.classList.toggle('fs',fsOn); stageEl.classList.toggle('rot',fsOn&&innerHeight>innerWidth);
+  if(fsOn&&!padPh){ padPh=document.createComment('pad'); padEl.parentNode.insertBefore(padPh,padEl); stageEl.appendChild(padEl); }
+  if(!fsOn&&padPh){ padPh.parentNode.insertBefore(padEl,padPh); padPh.remove(); padPh=null; }
+  fsBtn.textContent=fsOn?'✕':'⛶'; $('mgFs').textContent=fsOn?'✕':'⛶'; }
+function enterFs(){ fsOn=true; auInit(); const r=stageEl.requestFullscreen||stageEl.webkitRequestFullscreen; fsReal=!!r;
+  if(r){ try{ const p=r.call(stageEl); if(p&&p.then) p.then(()=>{ try{ screen.orientation.lock('landscape').catch(()=>{}); }catch(_){} }).catch(()=>{ fsReal=false; fsApply(); }); }catch(_){ fsReal=false; } }
+  fsApply(); try{ if(navigator.wakeLock) navigator.wakeLock.request('screen').then(l=>{ wl=l; }).catch(()=>{}); }catch(_){} }
+function exitFs(){ fsOn=false; if(fsEl()){ try{ (document.exitFullscreen||document.webkitExitFullscreen).call(document); }catch(_){} } try{ screen.orientation.unlock(); }catch(_){} if(wl){ try{ wl.release(); }catch(_){} wl=null; } fsApply(); }
+function toggleFs(){ if(fsOn) exitFs(); else enterFs(); }
+document.addEventListener('fullscreenchange',()=>{ if(fsReal&&fsOn&&!fsEl()) exitFs(); else fsApply(); });
+addEventListener('resize',()=>{ if(fsOn) fsApply(); });
+fsBtn.addEventListener('click',e=>{ fsBtn.blur(); toggleFs(); }); $('mgFs').addEventListener('click',()=>{ $('mgFs').blur(); toggleFs(); });
+
+/* ---------- 1. Đón sao 5 Tốt ---------- */
+const tier1=c=>1+(c>=3)+(c>=6)+(c>=10);
+const G1={title:'Đón sao 5 Tốt',zone:0,
+  desc:'', end:'Cả lớp vỗ tay cho bạn!', need:['st0','st1','st2','st3','st4','st5'],
+  init(m){ m.s={x:160,face:1,items:[],spawn:.4,pts:0,goal:55,fr:0,hit:0,cel:0,mv:false,combo:0,mag:0,stun:0,gt:0}; },
+  prog(m){ return {v:m.s.pts/m.s.goal,t:m.s.pts+'/'+m.s.goal}; },
+  upd(m,dt){ const s=m.s, dx=(keys.r?1:0)-(keys.l?1:0); s.stun=Math.max(0,s.stun-dt); s.mag=Math.max(0,s.mag-dt); s.gt+=dt;
+    if(s.stun>0){ s.mv=false; }
+    else if(m.down){ const d=m.px-s.x; s.x+=clamp(d,-230*dt,230*dt); s.mv=Math.abs(d)>3; if(Math.abs(d)>3) s.face=d>0?1:-1; } else { s.x+=dx*135*dt; s.mv=dx!==0; if(dx) s.face=dx; }
+    s.x=clamp(s.x,16,304); if(s.mv) s.fr+=dt*11; s.hit=Math.max(0,s.hit-dt); s.cel=Math.max(0,s.cel-dt);
+    s.spawn-=dt; if(s.spawn<=0){ s.spawn=rnd(.55,.95)-Math.min(.2,s.pts*.006); const r=Math.random(), bad=r<.27, gold=!bad&&r>.94;
+      s.items.push({x:rnd(22,298),y:-14,v:(gold?rnd(95,110):rnd(48,66))+s.pts*1.2,k:bad?pick([4,5]):gold?0:pick([0,1,2,3]),bad,gold,r:rnd(-.4,.4),rs:rnd(-1.5,1.5)}); }
+    for(let i=s.items.length-1;i>=0;i--){ const it=s.items[i]; it.y+=it.v*dt; it.r+=it.rs*dt;
+      if(s.mag>0&&!it.bad&&it.y>20) it.x+=clamp(s.x-it.x,-95*dt,95*dt);
+      if(it.y>122&&it.y<150&&Math.abs(it.x-s.x)<(s.mag>0?22:17)){ s.items.splice(i,1);
+        if(it.bad){ s.hit=.6; s.stun=.6; s.combo=0; s.pts=Math.max(0,s.pts-2); sfx('bad'); ftext(it.x,130,'-2','#e5533d'); burst(it.x,135,6,['#bbb','#999'],50); }
+        else { const t0=tier1(s.combo); s.combo++; const mu=tier1(s.combo), g=mu*(it.gold?3:1); s.pts=Math.min(s.goal,s.pts+g); s.cel=.45; sfx(it.gold?'star':'catchg'); ftext(it.x,125,'+'+g,'#f4b73e'); burst(it.x,132,it.gold?16:8,['#ffd34e','#fff3a8','#fff'],it.gold?90:60);
+          if(it.gold){ s.mag=4.5; ftext(s.x,106,'Nam châm!','#5fa8e0'); } if(mu>t0) ftext(s.x,96,'x'+mu+'!','#ff6b6b');
+          if(s.pts>=s.goal) mgWin(); }
+      } else if(it.y>196){ s.items.splice(i,1); } } },
+  drw(m){ const s=m.s;
+    grad(0,120,'#8fd0ff','#d9f1ff'); for(let i=0;i<3;i++){ const cx=(m.t*4+i*120)%380-30; rr(cx,26+i*18,44,12,6,'#ffffffcc'); rr(cx+10,20+i*18,26,12,6,'#ffffffcc'); }
+    mR(0,118,320,6,'#6cc26a'); mR(0,124,320,56,'#8ad277'); for(let i=0;i<22;i++) mR((i*47)%320,128+((i*29)%48),3,1,'#6cc26a'); mR(0,160,320,20,'#d8c08a'); mR(0,160,320,1,'#b79b64');
+    for(const it of s.items){ if(it.gold){ mx.save(); mx.shadowColor='#ffd34e'; mx.shadowBlur=10; spr('st0',it.x,it.y,{s:.62,rot:Math.sin(m.t*6)*.3}); mx.restore(); } else spr('st'+it.k,it.x,it.y,{s:.42,rot:it.r}); }
+    if(s.mag>0){ mx.globalAlpha=.25+.15*Math.sin(m.t*10); mx.beginPath(); mx.arc(s.x,150,26,0,6.283); mx.fillStyle='#5fa8e0'; mx.fill(); mx.globalAlpha=1; }
+    if(s.stun>0&&Math.floor(m.t*14)%2) mx.globalAlpha=.45;
+    kid(s.x,168,s.cel>0?(1-s.cel/.45)*3.9:s.fr,s.cel>0,s.face); mx.globalAlpha=1;
+    if(s.hit>0){ mt('ối!',s.x,122,8,'#fff','center','#e5533d'); }
+    if(s.combo>=2){ mt('COMBO '+s.combo,160,40,9,'#ffd34e','center','#4b2e1b'); mt('x'+tier1(s.combo)+' điểm',160,50,7,'#fff','center','#e5533d'); }
+    if(s.mag>0){ rr(120,56,80,5,2.5,'#fff8','#4b2e1b',1); rr(120,56,80*s.mag/4.5,5,2.5,'#5fa8e0'); }
+    if(m.pt<4) mt('Kéo để di chuyển',160,176,7,'#fff','center','#4b2e1b'); } };
+
+/* ---------- 2. Leo tháp English Time (kiểu Jump King: màn hình lật từng màn, khối đặc, hướng nhảy chốt lúc thả) ---------- */
+const GRV=600, PW2=5, PH2=28, ROW2=45, NR2=28, SCR=180, TOP0=10;
+const BK=[['#e5533d','#b8372a'],['#f4b73e','#c98a1a'],['#5fa8e0','#3b7fb8'],['#5cc79d','#3ea87f'],['#a97fd6','#7c55a8'],['#ff8fa3','#d9607a']];
+function lerpC(a,b,t){ const p=c=>[1,3,5].map(i=>parseInt(c.slice(i,i+2),16)); const A=p(a),B=p(b); return 'rgb('+A.map((v,i)=>Math.round(v+(B[i]-v)*t)).join(',')+')'; }
+function drawBooks(x,y,w,sd){ for(let L=0;L<2;L++){ const c=BK[(sd+L*2+L)%6], yy=y+L*6, xx=x+(L?2+(sd%3):0), ww=w-(L?4+(sd%3):0);
+    mR(xx,yy,ww,6,'#3a2a2a'); mR(xx+1,yy+1,ww-2,4,c[0]); mR(xx+1,yy+1,ww-2,1,'#ffffff66'); mR(xx+1,yy+4,ww-2,1,c[1]);
+    mR(xx+1,yy+1,3,4,c[1]); mR(xx+2,yy+2,1,2,'#ffe38a');
+    mR(xx+ww-5,yy+1,4,4,'#fbf0da'); mR(xx+ww-5,yy+2,4,1,'#d9c9a6'); mR(xx+ww-5,yy+4,4,1,'#d9c9a6');
+    if(ww>34) mR(xx+Math.round(ww*.35),yy+2,Math.round(ww*.22),2,'#fbf0daaa'); }
+  mR(x+1,y,w-2,1,'#ffffffaa'); }
+const G2={title:'Leo tháp English Time',zone:1,desc:'',end:'Lên tới đỉnh tháp rồi!',need:[],
+  init(m){ const P=[{x:0,y:0,w:320,h:60,ground:true}]; let pc=160, seed=G2.seed||5; const rd=()=>{ seed=(seed*9301+49297)%233280; return seed/233280; }, dirs=[1,-1];
+    for(let i=1;i<NR2;i++){ const y=-i*ROW2; if(i%8===0){ P.push({x:0,y,w:320,h:7,ow:true,rest:i/8}); pc=160; continue; }
+      const w=Math.round(54+rd()*18); let off=(70+rd()*28)*(rd()<.7?dirs[i%2]:-dirs[i%2]); let c=pc+off; if(c<w/2+16||c>320-w/2-16) c=pc-off; c=clamp(c,w/2+16,320-w/2-16);
+      P.push({x:Math.round(c-w/2),y,w,h:12,sd:Math.floor(rd()*6)}); pc=c; }
+    const top=-NR2*ROW2; P.push({x:80,y:top,w:160,h:12,goal:true,sd:1});
+    m.s={P,x:160,y:0,vx:0,vy:0,on:P[0],ch:0,dir:0,face:1,best:0,top,rest:0,lt:0,bonk:0}; },
+  prog(m){ const s=m.s; return {v:s.best/-s.top,t:'Màn '+(Math.floor((TOP0-s.y)/SCR)+1)+'/'+(Math.floor((TOP0-s.top)/SCR)+1)}; },
+  phys(s,dt){ s.vy+=GRV*dt; let nx=s.x+s.vx*dt;
+    if(nx<PW2){ nx=PW2; s.vx=Math.abs(s.vx)*.55; } if(nx>320-PW2){ nx=320-PW2; s.vx=-Math.abs(s.vx)*.55; }
+    for(const p of s.P){ if(p.ow) continue; if(nx+PW2>p.x&&nx-PW2<p.x+p.w&&s.y>p.y+.01&&s.y-PH2<p.y+p.h-.01){ nx=s.vx>=0?p.x-PW2:p.x+p.w+PW2; s.vx=-s.vx*.55; } }
+    s.x=nx; const py=s.y; let ny=py+s.vy*dt;
+    for(const p of s.P){ if(!(s.x+PW2>p.x&&s.x-PW2<p.x+p.w)) continue;
+      if(s.vy>0&&py<=p.y+.01&&ny>=p.y){ ny=p.y; s.vy=0; s.vx=0; s.on=p; }
+      else if(!p.ow&&s.vy<0&&py-PH2>=p.y+p.h-.01&&ny-PH2<p.y+p.h){ ny=p.y+p.h+PH2; s.vy=0; s.bonk=1; } }
+    s.y=ny; },
+  sim(s,dir,c){ const q={P:s.P,x:s.x,y:s.y,vx:dir*78,vy:-(130+210*c),on:null}; for(let i=0;i<600&&!q.on;i++) G2.phys(q,1/120); return {land:q.on,x:q.x,y:q.y}; },
+  jump(m,c){ const s=m.s; c=Math.max(c,.12); s.vy=-(130+210*c); s.vx=s.dir*78; s.on=null; s.ch=0; sfx('tick'); tone(260+c*300,.12,'square',.06,0,520+c*500); },
+  upd(m,dt){ const s=m.s, kb=(keys.r?1:0)-(keys.l?1:0);
+    if(s.on){ const hold=held(); let dir=kb; if(m.down) dir=m.px>s.x+14?1:m.px<s.x-14?-1:0;
+      if(hold){ s.ch=Math.min(1,s.ch+dt/.85); s.dir=dir; if(dir) s.face=dir; const q=Math.floor(s.ch*8); if(q!==s.lt){ s.lt=q; tone(280+s.ch*520,.04,'square',.05); } if(s.ch>=1) G2.jump(m,1); }
+      else if(s.ch>0){ G2.jump(m,s.ch); }
+      else if(kb){ s.x+=kb*40*dt; s.face=kb; const p=s.on; if(!(s.x+PW2>p.x&&s.x-PW2<p.x+p.w)){ s.on=null; s.vx=0; s.vy=0; } } }
+    else { const was=s.vy; const n=Math.ceil(dt*120); for(let i=0;i<n&&!s.on;i++) G2.phys(s,dt/n);
+      if(s.on){ sfx('step'); const p=s.on; if(p.rest&&p.rest>s.rest){ s.rest=p.rest; sfx('match'); ftext(s.x,90,'Chỗ nghỉ!','#f4b73e'); } if(p.goal) mgWin(); }
+      if(s.bonk){ s.bonk=0; sfx('bad'); } }
+    s.best=Math.max(s.best,-s.y); },
+  drw(m){ const s=m.s, k=Math.floor((TOP0-s.y)/SCR), camTop=TOP0-(k+1)*SCR, SY=wy=>wy-camTop, t=clamp(k/6,0,1);
+    mx.fillStyle=(()=>{ const g=mx.createLinearGradient(0,0,0,180); g.addColorStop(0,lerpC('#7cc4ff','#5a5fc0',t)); g.addColorStop(1,lerpC('#dff3ff','#ffb98a',t)); return g; })(); mx.fillRect(0,0,320,180);
+    mx.globalAlpha=.1; for(let i=0;i<8;i++){ const lt='ABCDEFGHIJKLMNOP'[(k*3+i)%16]; mt(lt,24+(i%4)*84,60+Math.floor(i/4)*80+((k+i)%3)*10,44,'#ffffff','center'); } mx.globalAlpha=1;
+    for(let i=0;i<4;i++){ const hx=((i*71+k*37)%300), hy=((i*53+k*29)%110)+10; rr(hx,hy,44,11,5.5,'#ffffffaa'); rr(hx+9,hy-6,26,11,5.5,'#ffffffaa'); }
+    for(const p of s.P){ const y=SY(p.y); if(y>190||y+p.h<-5) continue;
+      if(p.ground){ mR(0,y,320,60,'#8f6330'); mR(0,y,320,3,'#e8b872'); mR(0,y+3,320,2,'#c8924f'); for(let i=0;i<9;i++) mR(i*40+((i*13)%9),y+5,1,60,'#7a4f22'); continue; }
+      if(p.goal){ drawBooks(p.x,y,p.w,3); mR(206,y-48,2,48,'#7a4b2a'); rr(208,y-48,40,22,3,'#3b82c4','#1f4f8a',1.2); mt('ENGLISH',228,y-38,6.5,'#fff','center'); mt('TIME',228,y-30,6.5,'#ffd34e','center'); mt('ĐÍCH',160,y-8,8,'#c0392b','center','#fff');
+        const sp=NSP.english, c=NSZ.n.english; if(sp&&sp.ok){ const f=c.wave[Math.floor(m.t*4)%c.wave.length]; mx.save(); mx.translate(130,y+1); mx.scale(-1,1); mx.drawImage(sp.img,f*NSZ.cw,0,NSZ.cw,NSZ.ch,-28,-50,56,50); mx.restore(); } continue; }
+      if(p.ow){ mR(0,y,320,5,'#c8924f'); mR(0,y,320,1,'#f0cc8e'); mR(0,y+4,320,1,'#8f6330'); for(let bx=24;bx<320;bx+=80){ mR(bx,y+5,3,6,'#7a4f22'); mR(bx-3,y+9,3,2,'#7a4f22'); } rr(12,y-13,50,12,3,'#fbf0da','#7a4b2a',1.2); mt('CHỖ NGHỈ',37,y-4,6,'#7a4b2a','center'); continue; }
+      drawBooks(p.x,y,p.w,p.sd); }
+    const sy=SY(s.y), air=!s.on;
+    if(s.on&&s.ch>0){ rr(s.x-12,sy-44,24,5,2.5,'#fff8','#4b2e1b',1); rr(s.x-12,sy-44,24*s.ch,5,2.5,lerpC('#5cc79d','#e5533d',s.ch)); }
+    mx.save(); mx.translate(s.x,sy); mx.scale(1,1-.14*s.ch); mx.translate(-s.x,-sy); kid(s.x,sy+1,air?1:0,air,s.face); mx.restore();
+    if(m.pt<6&&s.best<20) mt('Giữ Space/chuột để nạp lực, thả để nhảy (hướng chốt lúc thả)',160,176,6.2,'#fff','center','#4b2e1b'); } };
+
+/* ---------- 3. Lật thẻ trang sức ---------- */
+const G3={title:'Lật thẻ trang sức',zone:2,
+  desc:'Mỗi lượt lật hai thẻ và tìm các cặp trang sức giống nhau. Có 6 cặp, không giới hạn thời gian.',
+  end:'Một bộ sưu tập lấp lánh!', need:['jw0','jw1','jw2','jw3','jw4','jw5','jw6','jw7','jw8','jw9','jw10','jw11'],
+  init(m){ const ks=shuf([0,0,1,1,2,2,3,3,4,4,5,5]); m.s={cards:ks.map((k,i)=>({k,a:0,st:0,x:16+(i%4)*45,y:30+Math.floor(i/4)*48,sp:-1})),sel:[],lock:0,pairs:0,peek:2.2,cur:0,kb:false}; m.s.cards.forEach(c=>{ c.a=1; c.st=1; }); },
+  prog(m){ return {v:m.s.pairs/6,t:m.s.pairs+'/6'}; },
+  upd(m,dt){ const s=m.s;
+    if(s.peek>0){ s.peek-=dt; if(s.peek<=0) s.cards.forEach(c=>c.st=0); }
+    for(const c of s.cards){ const tg=c.st>0?1:0; c.a+=clamp(tg-c.a,-dt*6,dt*6); if(c.sp>=0){ c.sp+=dt; if(c.sp>.6) c.sp=-1; } }
+    if(s.lock>0){ s.lock-=dt; if(s.lock<=0){ const [a,b]=s.sel; s.sel=[];
+      if(s.cards[a].k===s.cards[b].k){ for(const i of [a,b]){ const c=s.cards[i]; c.st=2; c.sp=0; burst(c.x+20,c.y+21,8,['#ffd34e','#fff3a8','#fff'],50); } s.pairs++; sfx('match'); if(s.pairs>=6) mgWin(); }
+      else { s.cards[a].st=0; s.cards[b].st=0; sfx('flip'); } } return; }
+    if(s.peek>0) return;
+    const flipC=i=>{ const c=s.cards[i]; if(c.st!==0||s.sel.length>=2) return; c.st=1; s.sel.push(i); sfx('flip'); if(s.sel.length===2) s.lock=.85; };
+    for(const l of m.keyQ){ s.kb=true; let c=s.cur%4, r=Math.floor(s.cur/4); if(l===0) c=(c+3)%4; else if(l===3) c=(c+1)%4; else if(l===1) r=(r+1)%3; else r=(r+2)%3; s.cur=r*4+c; sfx('flip'); }
+    for(const a of m.actQ){ s.kb=true; flipC(s.cur); }
+    for(const t of m.tapQ){ if(t.key) continue; s.kb=false; for(let i=0;i<12;i++){ const c=s.cards[i]; if(c.st!==0) continue; if(t.x>=c.x&&t.x<=c.x+40&&t.y>=c.y&&t.y<=c.y+44){ flipC(i); break; } } if(s.sel.length>=2) break; } },
+  drw(m){ const s=m.s;
+    grad(0,180,'#2b2a55','#4a3a78'); for(let i=0;i<30;i++){ const tw=(Math.sin(m.t*2+i)+1)/2; mx.globalAlpha=.25+tw*.5; mR((i*53)%320,(i*37)%180,1.5,1.5,'#fff3a8'); } mx.globalAlpha=1;
+    rr(8,24,191,152,8,'#00000033');
+    for(const c of s.cards){ const sx=Math.abs(Math.cos(c.a*Math.PI)); mx.save(); mx.translate(c.x+20,c.y+22); mx.scale(Math.max(.04,sx),1);
+      const face=c.a>.5; const g=G(face?'jw'+(c.k+2):'jw0'); if(g.ok){ if(c.st===2){ mx.shadowColor='#ffd34e'; mx.shadowBlur=8; } mx.drawImage(g.img,-20,-22,40,44); } mx.restore();
+      if(c.sp>=0){ const fr=Math.min(3,Math.floor(c.sp/.15)); spr('jw'+(8+fr),c.x+20,c.y+22,{s:.5}); } }
+    if(s.kb&&s.peek<=0){ const c=s.cards[s.cur], pu=1+Math.sin(m.t*8)*.8; mx.strokeStyle='#ffd34e'; mx.lineWidth=2; mx.strokeRect(c.x-2-pu/2,c.y-2-pu/2,44+pu,48+pu); }
+    panel(208,34,104,70); mt('Cặp đã tìm',260,52,8,'#7a4b2a','center'); mt(s.pairs+'/6',260,80,22,'#3b82c4','center');
+    for(let i=0;i<6;i++){ const found=s.cards.some(c=>c.st===2&&c.k===i); const g=G('jw'+(i+2)); if(g.ok){ mx.globalAlpha=found?1:.22; mx.drawImage(g.img,223+(i%3)*30,120+Math.floor(i/3)*28,24,26); mx.globalAlpha=1; } }
+    if(s.peek>0) mt('Nhớ vị trí các thẻ nhé!',108,19,8,'#fff3a8','center','#2b2a55'); else if(!s.kb&&m.pt<5) mt('Chạm thẻ, hoặc ← ↑ ↓ → rồi Enter',108,19,7,'#fff3a8','center','#2b2a55'); } };
+
+/* ---------- 4. Ngày đầu đi làm (quầy đông khách) ---------- */
+const SLX=[58,160,262];
+const G4={title:'Ngày đầu đi làm',zone:3,desc:'',end:'Ngày đầu tiên thật vui!',
+  need:['desk','hire0','hire1','hire2','hire3','hire4','hire5','hire6','hire7','sup0','sup1','sup2','sup3','sup4','sup5','sup6','sup7'],
+  init(m){ m.s={pts:0,goal:300,slots:[null,null,null],sp:[.3,1.4,2.6],combo:0,fly:[],shake:0,made:0,done:0}; },
+  mk(s){ const n=s.made<3?1:s.made<6?(Math.random()<.6?2:1):(Math.random()<.4?3:2); s.made++; return {k:Math.floor(Math.random()*4),items:shuf([0,1,2,3,4,5,6,7]).slice(0,n),got:0,pat:1,max:13+n*6,off:90,st:'in',t:0}; },
+  prog(m){ return {v:m.s.pts/m.s.goal,t:m.s.pts+'/'+m.s.goal}; },
+  give(m,i){ const s=m.s; let bh=null,bi=-1; s.slots.forEach((h,j)=>{ if(h&&h.st==='ask'&&h.items[h.got]===i&&(!bh||h.pat<bh.pat)){ bh=h; bi=j; } });
+    const tx=22+i*39;
+    if(!bh){ s.combo=0; s.shake=.35; sfx('bad'); ftext(tx,128,'Chưa ai cần','#e5533d'); return; }
+    s.combo++; const mu=tier1(s.combo); s.pts=Math.min(s.goal,s.pts+5*mu); s.fly.push({i,to:SLX[bi],t:0}); bh.got++; sfx('catchg'); ftext(SLX[bi]+10,92,'+'+5*mu,'#f4b73e');
+    if(mu>tier1(s.combo-1)) ftext(160,126,'Combo x'+mu+'!','#ff6b6b');
+    if(bh.got>=bh.items.length){ const b=Math.round(15*mu*(.4+.6*bh.pat)); s.pts=Math.min(s.goal,s.pts+b); bh.st='happy'; bh.t=0; s.done++; sfx('star'); ftext(SLX[bi],70,'+'+b+' hoàn thành!','#5cc79d'); burst(SLX[bi],85,12,['#ffd34e','#5fa8e0','#ff8fa3','#fff'],70);
+      if(s.pts>=s.goal) mgWin(); } },
+  upd(m,dt){ const s=m.s; s.shake=Math.max(0,s.shake-dt);
+    for(let i=0;i<3;i++){ let h=s.slots[i];
+      if(!h){ s.sp[i]-=dt; if(s.sp[i]<=0){ s.slots[i]=G4.mk(s); } continue; }
+      h.t+=dt;
+      if(h.st==='in'){ h.off=Math.max(0,h.off-dt*220); if(h.off<=0){ h.st='ask'; } }
+      else if(h.st==='ask'){ h.pat-=dt/h.max; if(h.pat<=0){ h.st='leave'; h.t=0; s.combo=0; sfx('bad'); ftext(SLX[i],70,'Chậm quá!','#e5533d'); } }
+      else if(h.st==='happy'&&h.t>.9){ s.slots[i]=null; s.sp[i]=.7; }
+      else if(h.st==='leave'&&h.t>.8){ s.slots[i]=null; s.sp[i]=.9; } }
+    for(let i=s.fly.length-1;i>=0;i--){ s.fly[i].t+=dt/.28; if(s.fly[i].t>=1) s.fly.splice(i,1); }
+    for(const t of m.tapQ){ if(t.key||t.y<130) continue; const i=Math.round((t.x-22)/39); if(i>=0&&i<8&&Math.abs(t.x-(22+i*39))<19) G4.give(m,i); }
+    for(const n of m.numQ) G4.give(m,n); },
+  drw(m){ const s=m.s;
+    grad(0,180,'#e8f4ff','#fdf3dc'); mR(0,0,320,6,'#5fa8e0'); rr(20,30,64,40,3,'#fff','#a9cde8',1.5); mR(52,30,1,40,'#a9cde8'); mR(20,50,64,1,'#a9cde8'); rr(238,32,56,30,3,'#5fa8e0'); mt('ACB',266,53,14,'#fff','center');
+    for(let i=0;i<3;i++){ const h=s.slots[i]; if(!h) continue; const x=SLX[i]+h.off*(i===1?0:(i===0?-1:1))+(h.st==='in'&&i===1?0:0), fl=h.st==='in'?Math.floor(m.t*6)%2:0; let ox=0,oy=0,a=1;
+      if(h.st==='leave'){ ox=Math.sin(h.t*30)*2; a=clamp(1-(h.t-.4)*2.5,0,1); } if(h.st==='happy'){ oy=-Math.abs(Math.sin(h.t*9))*3; a=clamp((.9-h.t)*5,0,1); }
+      if(h.st==='in'&&i===1){ a=clamp(1-h.off/90,0,1); }
+      mx.globalAlpha=a; spr('hire'+(h.st==='happy'?h.k+4:h.k),x+ox,124+oy,{ay:1}); mx.globalAlpha=1; }
+    spr('desk',160,181,{s:1.2,ay:1});
+    for(let i=0;i<3;i++){ const h=s.slots[i]; if(!h||h.off>4||h.st==='leave'&&h.t>.5) continue; const x=SLX[i], n=h.items.length, w=14+n*24;
+      rr(x-w/2,24,w,34,6,'#fbf0dae8','#7a4b2a',1.5); mx.fillStyle='#fbf0dae8'; mx.beginPath(); mx.moveTo(x-5,57); mx.lineTo(x+5,57); mx.lineTo(x,64); mx.fill();
+      h.items.forEach((it,j)=>{ const ix=x-w/2+7+12+j*24, done=j<h.got, nxt=j===h.got&&h.st==='ask'; if(nxt){ rr(ix-12,26,24,24,5,'#ffe38a88'); } mx.globalAlpha=done?.28:1; sprFit('sup'+it,ix,38,20,20); mx.globalAlpha=1; if(done){ okMark(ix+8,45); } });
+      rr(x-w/2+5,51,w-10,4,2,'#7a4b2a33'); if(h.st==='ask'||h.st==='happy') rr(x-w/2+5,51,Math.max(2,(w-10)*clamp(h.pat,0,1)),4,2,h.pat>.5?'#5cc79d':h.pat>.25?'#f4b73e':'#e5533d'); }
+    const sh=s.shake>0?Math.sin(s.shake*60)*2:0;
+    rr(4+sh,130,312,48,8,'#fbf0dae6','#7a4b2a',2);
+    for(let i=0;i<8;i++){ const cx=22+i*39+sh; sprFit('sup'+i,cx,153,32,30); mt(String(i+1),cx-14,141,6,'#7a4b2a88'); }
+    for(const f of s.fly){ const u=f.t, cx=22+f.i*39; sprFit('sup'+f.i,cx+(f.to-cx)*u,153+(92-153)*u-Math.sin(u*3.14)*18,28-10*u,28-10*u); }
+    if(s.combo>=2){ mt('COMBO '+s.combo,160,14,8,'#ffd34e','center','#4b2e1b'); mt('x'+tier1(s.combo),205,14,8,'#fff','left','#e5533d'); }
+    if(m.pt<6) mt('Chạm món trong khay (hoặc phím 1-8) theo bóng thoại',160,176,6.3,'#7a4b2a','center'); } };
+
+/* ---------- 5. Lan tỏa chiến dịch (nhịp điệu) ---------- */
+const TRV=1.9, HIT=142, LIC=[0,1,2,4], LKEY=['←','↓','↑','→'], LNAME=['Tim','Like','Chia sẻ','Loa'];
+const lx5=i=>30+i*34, tier5=c=>1+(c>=5)+(c>=10)+(c>=20)+(c>=30);
+const G5={title:'Lan tỏa chiến dịch',zone:4,
+  desc:'Các biểu tượng trôi xuống 4 làn kênh. Khi nó chạm vạch, bấm đúng lúc để "đăng" bài: dùng phím ← ↓ ↑ → hoặc chạm vào làn trên màn hình. Bấm liên tiếp đúng thì đạt combo và được nhân điểm (x2 đến x5). Trượt nhịp hoặc bấm nhầm sẽ bị trừ hồ sơ và mất combo. Cùng chạm tới 2.057 hồ sơ, đúng bằng số hồ sơ thực tế của The Next Banker.',
+  end:'2.057 hồ sơ ứng tuyển!', need:['booth','soc0','soc1','soc2','soc3','soc4','soc5','soc6','soc7','stu0','stu1','stu2','stu3','stu4','stu5','stu6','stu7','stu8','stu9','stu10','stu11'],
+  init(m){ m.s={apps:0,goal:2057,notes:[],now:0,next:TRV+.5,combo:0,best:0,studs:[],press:[0,0,0,0],prev:1,beat:0,qd:0}; },
+  prog(m){ return {v:m.s.apps/m.s.goal,t:Math.floor(m.s.apps).toLocaleString('vi-VN')}; },
+  upd(m,dt){ const s=m.s; s.now+=dt;
+    while(s.next-TRV<=s.now){ let ln=(s.prev+pick([1,3,2,0,1,3]))%4; s.prev=ln; s.notes.push({ln,arr:s.next,done:false,miss:false,fade:0});
+      if(s.combo>8&&Math.random()<.22){ s.notes.push({ln:(ln+2)%4,arr:s.next,done:false,miss:false,fade:0}); }
+      s.beat++; s.next+=(s.beat%8===0)?.28:.56; }
+    const pr=m.keyQ.slice(); for(const t of m.tapQ){ if(t.key) continue; const l=Math.floor((t.x-13)/34); if(l>=0&&l<4&&t.x<150) pr.push(l); }
+    for(const l of pr){ s.press[l]=.18; let bn=null,bd=9; for(const n of s.notes){ if(n.ln!==l||n.done) continue; const d=Math.abs(n.arr-s.now); if(d<bd){ bd=d; bn=n; } }
+      if(bn&&bd<.22){ bn.done=true; const per=bd<.09, t0=tier5(s.combo); s.combo++; s.best=Math.max(s.best,s.combo); const mult=tier5(s.combo), g=(per?12:6)*mult; if(mult>t0){ ftext(244,84,'x'+mult+' điểm!','#ff6b6b'); sfx('star'); } s.apps=Math.min(s.goal,s.apps+g);
+        sfx('r'+l); if(per) tone([1047,1319,1568,1976][l],.14,'triangle',.08,.02);
+        ftext(lx5(l),128,per?'Tuyệt!':'Tốt','#f4b73e'); ftext(244,58,'+'+Math.round(g),'#3b82c4'); burst(lx5(l),HIT,per?10:5,['#ffd34e','#fff','#5fa8e0'],60);
+        for(let q=0;q<(per?2:1);q++) if(s.studs.length<20) s.studs.push({x:156-q*14,k:Math.floor(Math.random()*6),sp:rnd(48,62),ph:rnd(0,2)});
+        if(s.apps>=s.goal){ mgWin(); return; } }
+      else { sfx('bad'); s.combo=0; s.apps=Math.max(0,s.apps-10); ftext(lx5(l),128,'-10','#e5533d'); } }
+    for(let i=0;i<4;i++) s.press[i]=Math.max(0,s.press[i]-dt);
+    for(let i=s.notes.length-1;i>=0;i--){ const n=s.notes[i]; if(n.done){ n.fade+=dt; if(n.fade>.2) s.notes.splice(i,1); continue; }
+      if(s.now-n.arr>.22){ if(!n.miss){ n.miss=true; s.combo=0; s.apps=Math.max(0,s.apps-30); sfx('bad'); ftext(lx5(n.ln),128,'Trượt -30','#e5533d'); } n.fade+=dt; if(n.fade>.5) s.notes.splice(i,1); } }
+    for(let i=s.studs.length-1;i>=0;i--){ const u=s.studs[i]; u.x+=u.sp*dt; if(u.x>240){ s.studs.splice(i,1); burst(244,150,5,['#fff','#5fa8e0','#ffd34e'],40); } } },
+  drw(m){ const s=m.s;
+    grad(0,152,'#bfe3ff','#f2f9ff'); mR(0,150,320,30,'#b3c4d9'); mR(0,150,320,2,'#8fa3bd'); for(let i=0;i<7;i++){ const x=((i*50+m.t*30)%340)-10; mt('>',x,172,10,'#fff'); }
+    for(let i=0;i<3;i++){ const cx=(m.t*3+i*140)%400-40; rr(cx,60+i*14,40,10,5,'#fffc'); }
+    spr('booth',242,153,{s:.56,ay:1});
+    panel(176,24,136,26); mt('Hồ sơ ứng tuyển',244,34,6.5,'#7a4b2a','center'); mt(Math.floor(s.apps).toLocaleString('vi-VN'),244,47,12,'#3b82c4','center');
+    for(const u of s.studs){ const f=Math.floor(m.t*6+u.ph)%2; spr('stu'+(u.k*2+f),u.x,166,{ay:1,s:.9}); }
+    /* làn nhịp */
+    rr(10,28,142,140,6,'#ffffff88','#7a4b2a',1.5);
+    for(let i=0;i<4;i++){ const x=lx5(i); if(i>0) mR(x-17,32,1,132,'#7a4b2a33'); mx.globalAlpha=s.press[i]>0?.5:.15; mR(x-16,32,32,132,'#5fa8e0'); mx.globalAlpha=1; }
+    mR(12,HIT+13,138,1,'#7a4b2a55');
+    for(let i=0;i<4;i++){ const x=lx5(i), p=s.press[i]>0; mx.beginPath(); mx.arc(x,HIT,13,0,6.283); mx.fillStyle=p?'#ffd34ecc':'#ffffffaa'; mx.fill(); mx.lineWidth=1.5; mx.strokeStyle='#4b2e1b'; mx.stroke(); spr('soc'+LIC[i],x,HIT,{s:.42,a:.55});
+      mt(LKEY[i],x,165,9,p?'#c0392b':'#7a4b2a','center'); }
+    mx.save(); mx.beginPath(); mx.rect(11,33,140,134); mx.clip();
+    for(const n of s.notes){ const y=HIT-(n.arr-s.now)/TRV*(HIT+14); if(y<-14) continue; const a=n.done?clamp(1-n.fade/.2,0,1):n.miss?clamp(.5-n.fade,0,.5):1; spr('soc'+LIC[n.ln],lx5(n.ln),y,{s:n.done?.55+n.fade*2:.55,a}); }
+    mx.restore();
+    if(s.combo>=2){ mt('COMBO '+s.combo,244,68,9,'#ffd34e','center','#4b2e1b'); mt('Nhân điểm x'+tier5(s.combo),244,78,7,'#fff','center','#e5533d'); } else mt('Combo 5 / 10 / 20 / 30 = x2 / x3 / x4 / x5',244,70,6,'#fff','center','#3b82c4');
+    if(m.pt<6) mt('Bấm khi biểu tượng chạm vạch!',81,22,6.5,'#fff','center','#3b82c4'); } };
+
+/* ---------- 6. Đón khách đúng bến ---------- */
+const DX=97, SPD=72;
+const G6={title:'Đón khách đúng bến',zone:5,
+  desc:'Xe buýt tự chạy. Giữ chuột, giữ nút hoặc giữ phím Space để phanh, dừng sao cho cửa xe thẳng vạch dừng. Nhả ra để xe chạy tiếp. Đón đủ 6 trạm.',
+  end:'Chuyến xe trọn vẹn!', need:['bus0','bus1','bus2','bus3','stop0','stop1','pas0','pas1','pas2','pas3','pas4','pas5','pas6','pas7','pas8','pas9'],
+  init(m){ m.s={v:SPD,n:0,goal:6,ph:'drive',bg:0,bgx:0,pass:[],stop:null,t:0,hint:'',heart:0,wheel:0,still:0}; G6.spawn(m,DX+340); },
+  spawn(m,x){ const s=m.s, ks=shuf([0,2,4,6,8]).slice(0,1+Math.floor(Math.random()*3)); s.stop={x}; s.pass=ks.map((k,i)=>({k,x:x-26+i*18,y:152,ph:'wait',t:0,a:1})); },
+  prog(m){ return {v:m.s.n/6,t:m.s.n+'/6'}; },
+  upd(m,dt){ const s=m.s; s.t+=dt;
+    if(s.ph==='drive'){ if(held()) s.v=Math.max(0,s.v-100*dt); else s.v=Math.min(SPD,s.v+38*dt);
+      s.stop.x-=s.v*dt; s.bgx+=s.v*dt*.7; s.wheel+=s.v*dt; s.hint='';
+      const d=s.stop.x-DX;
+      if(s.v<5&&held()){ s.still+=dt;
+        if(Math.abs(d)<=3){ s.ph='board'; s.t=0; s.v=0; s.open=true; sfx('hiss'); for(const p of s.pass){ p.ph='walk'; p.t=0; } engine(false); }
+        else if(Math.abs(d)<110&&s.still>.35){ s.stop.x-=clamp(d,-30*dt,30*dt); s.hint='Nhích nhẹ cho thẳng vạch…'; }
+        else s.hint=d>0?'Còn xa vạch, nhả phanh cho xe chạy tiếp':'Hơi quá vạch rồi, bác tài chờ trạm sau nhé'; }
+      else s.still=0;
+      if(s.stop.x<-120){ G6.spawn(m,DX+300); }
+      for(const p of s.pass) p.x=s.stop.x-26+s.pass.indexOf(p)*18; }
+    else if(s.ph==='board'){ s.stop.x+=0; let all=true;
+      for(const p of s.pass){ if(p.ph==='walk'){ if(s.t<.5+s.pass.indexOf(p)*.5) { all=false; continue; } const tx=DX+(s.pass.indexOf(p)-1)*3, ty=170; p.x+=clamp(tx-p.x,-34*dt,34*dt); p.y+=clamp(ty-p.y,-26*dt,26*dt); if(Math.abs(tx-p.x)<1&&Math.abs(ty-p.y)<1){ p.ph='in'; p.t=0; sfx('tick'); burst(DX,166,6,['#ff8fa3','#ffd34e'],40); } else all=false; } else if(p.ph==='in'){ p.a=Math.max(0,p.a-dt*3); if(p.a>0) all=false; } }
+      if(all){ s.ph='thanks'; s.t=0; sfx('match'); s.heart=1; } }
+    else if(s.ph==='thanks'){ if(s.t>1){ s.n++; s.open=false; sfx('hiss'); if(s.n>=s.goal){ mgWin(); s.ph='done'; } else { s.ph='drive'; s.v=0; s.bg=s.n/(s.goal-1); G6.spawn(m,DX+330); engine(false); } } } },
+  drw(m){ const s=m.s, bw=1636, bgx=-(s.bgx%bw);
+    const day=G('city0'), dusk=G('city2');
+    for(const [g,a] of [[day,1],[dusk,clamp(s.n/(s.goal-1),0,1)]]){ if(!g.ok||a<=0) continue; mx.globalAlpha=a; mx.drawImage(g.img,bgx/2,0,bw/2,180); mx.drawImage(g.img,bgx/2+bw/2,0,bw/2,180); } mx.globalAlpha=1;
+    if(!day.ok){ grad(0,180,'#8fd0ff','#cde'); mR(0,150,320,30,'#556'); }
+    const st=s.stop; if(st){ const x=st.x;
+      mR(x-1,158,2,20,'#fff'); mR(x-5,158,10,1,'#fff');
+      spr('stop0',x,154,{ay:1,s:.9}); spr('stop1',x+58,154,{ay:1,s:.9});
+      mt('DỪNG',x,100,6,'#fff','center','#3b82c4');
+      for(const p of s.pass){ if(p.a<=0) continue; const fr=(p.ph==='wait'?(Math.floor(m.t*2)%2):1); spr('pas'+(p.k+(fr?1:0)),p.x,p.y,{ay:1,s:.82,a:p.a}); } }
+    const moving=s.ph==='drive'&&s.v>6, bob=moving?Math.round(Math.sin(m.t*14)):0, fr=s.ph==='board'?2:s.ph==='thanks'?3:(moving&&Math.floor(s.wheel/9)%2?1:0);
+    spr('bus'+fr,95,176+bob,{ay:1});
+    mx.fillStyle='#ffd34e'; mx.beginPath(); mx.moveTo(DX-5,112); mx.lineTo(DX+5,112); mx.lineTo(DX,119); mx.fill();
+    if(s.hint) { rr(60,22,200,16,6,'#fbf0dae6','#7a4b2a',1.5); mt(s.hint,160,33,7,'#7a4b2a','center'); }
+    else if(s.ph==='drive'&&s.n===0&&m.pt<7) { rr(60,22,200,16,6,'#fbf0dae6','#7a4b2a',1.5); mt('Giữ để phanh, thả để chạy',160,33,7,'#7a4b2a','center'); } } };
+const MGS=[G1,G2,G3,G4,G5,G6];
+function mgWin(){ if(!mg||mg.phase!=='play') return; mg.phase='end'; mg.endT=0; sfx('badge'); engine(false); burst(160,60,40,['#ffd34e','#ff6b6b','#5fa8e0','#5cc79d','#fff'],110); }
+function openGame(z){ const d=MGS[z]; if(!d) return; auInit(); sfx('open'); keys.l=false; keys.r=false;
+  mg={d,z,t:0,pt:0,phase:'intro',endT:0,tapQ:[],keyQ:[],numQ:[],actQ:[],px:160,py:90,down:false,kdown:false}; mp=[]; mft=[]; d.need.concat(['badge'+BADGES[z].f,'badge'+(BADGES[z].f+6)]).forEach(G); if(z===5){ G('city0'); G('city2'); }
+  d.init(mg); { const rh=$('rotHint'); rh.hidden=!(matchMedia('(pointer:coarse)').matches&&innerHeight>innerWidth&&!fsOn); clearTimeout(rh._t); if(!rh.hidden) rh._t=setTimeout(()=>{ rh.hidden=true; },6000); } mgEl.hidden=false; stageEl.classList.add('gm'); state='game'; promptEl.hidden=true; dialogEl.hidden=true; askEl.hidden=true; $('stage').classList.remove('talking'); }
+function closeGame(){ if(!mg) return; mgEl.hidden=true; $('rotHint').hidden=true; stageEl.classList.remove('gm'); engine(false); mg=null; state='play'; }
+function mgFinish(){ const z=mg.z, first=!got[z]; got[z]=true; saveBadges(); closeGame(); refresh();
+  toast(first?(allB()?'Đủ 6 huy hiệu! Cổng "?" cuối đường đã sáng đèn.':'Đã nhận huy hiệu "'+BADGES[z].n+'" ('+gotN()+'/6)'):'Chơi lại vui chưa nào!'); }
+let toastT=0; function toast(t){ toastEl.textContent=t; toastEl.hidden=false; toastEl.classList.remove('show'); void toastEl.offsetWidth; toastEl.classList.add('show'); clearTimeout(toastT); toastT=setTimeout(()=>{ toastEl.hidden=true; },4200); }
+function keycap(x,y,t,w){ w=w||14; rr(x-w/2,y-7,w,14,3,'#fff','#7a4b2a',1.3); mt(t,x,y+3,7.5,'#7a4b2a','center'); }
+function arrowR(x,y,dir){ mx.fillStyle='#7a4b2a'; mx.beginPath(); const d=dir||1; mx.moveTo(x-6*d,y-3); mx.lineTo(x+1*d,y-3); mx.lineTo(x+1*d,y-7); mx.lineTo(x+8*d,y); mx.lineTo(x+1*d,y+7); mx.lineTo(x+1*d,y+3); mx.lineTo(x-6*d,y+3); mx.closePath(); mx.fill(); }
+function okMark(x,y){ mx.beginPath(); mx.arc(x,y,6,0,6.283); mx.fillStyle='#5cc79d'; mx.fill(); mx.strokeStyle='#fff'; mx.lineWidth=1.8; mx.beginPath(); mx.moveTo(x-3,y); mx.lineTo(x-.8,y+2.6); mx.lineTo(x+3.2,y-2.6); mx.stroke(); }
+function noMark(x,y){ mx.beginPath(); mx.arc(x,y,6,0,6.283); mx.fillStyle='#e5533d'; mx.fill(); mx.strokeStyle='#fff'; mx.lineWidth=1.8; mx.beginPath(); mx.moveTo(x-2.6,y-2.6); mx.lineTo(x+2.6,y+2.6); mx.moveTo(x+2.6,y-2.6); mx.lineTo(x-2.6,y+2.6); mx.stroke(); }
+function mgHow(m){ const t=m.t;
+  if(m.z===0){
+    okMark(56,74); for(let i=0;i<4;i++) sprFit('st'+i,84+i*25,74,20,20);
+    noMark(56,102); sprFit('st4',84,102,20,20); sprFit('st5',109,102,20,20);
+    kid(244,106,t*7,false,1); arrowR(214,88,-1); arrowR(274,88,1); keycap(230,119,'←'); keycap(258,119,'→'); mt('hoặc kéo ngón tay',244,134,6.5,'#7a4b2a','center');
+    mx.save(); mx.shadowColor='#ffd34e'; mx.shadowBlur=8; spr('st0',184,74,{s:.5}); mx.restore(); mt('+3',184,92,6.5,'#c0392b','center'); mt('hút đồ',184,99,5.5,'#5fa8e0','center'); mt('Chạm đồ xấu: -2 điểm, khựng lại',126,112,6.2,'#7a4b2a'); mt('Hứng liên tiếp: x2 x3 x4 điểm',58,126,6.8,'#c0392b');
+  } else if(m.z===1){
+    drawBooks(50,118,50,0); drawBooks(118,96,50,2); drawBooks(184,74,50,4); mR(214,40,1.6,34,'#7a4b2a'); rr(216,40,26,14,2,'#3b82c4'); mt('ENGLISH',229,48,4.5,'#fff','center'); mt('TIME',229,53,4.5,'#ffd34e','center');
+    kid(70,118,0,false,1); mx.fillStyle='#7a4b2a'; for(let i=0;i<8;i++){ const u=i/7; mx.fillRect(78+u*44,98-Math.sin(u*3.14)*24,2,2); }
+    keycap(244,70,'←'); keycap(262,70,'→'); mt('chọn hướng',253,86,6,'#7a4b2a','center');
+    keycap(253,102,'Space',34); mt('GIỮ: nạp lực',253,119,7,'#c0392b','center'); mt('THẢ: nhảy',253,129,7,'#3b82c4','center');
+    mt('Leo từng màn tới lá cờ English Time',140,138,6.8,'#7a4b2a','center');
+  } else if(m.z===2){
+    spr('jw0',64,86,{s:.5}); spr('jw0',94,86,{s:.5}); arrowR(122,86);
+    spr('jw2',152,86,{s:.5}); spr('jw2',182,86,{s:.5}); okMark(167,112);
+    mt('Tìm 2 thẻ',240,80,8.5,'#7a4b2a','center'); mt('giống nhau',240,92,8.5,'#7a4b2a','center'); mt('chạm để lật',240,108,6.5,'#c0392b','center');
+  } else if(m.z===3){
+    const hx=[64,118,172], ord=[[2,5],[0],[7,1]];
+    hx.forEach((x,i)=>{ spr('hire'+i,x,106,{ay:1,s:.5}); const n=ord[i].length, w=10+n*18; rr(x-w/2,56,w,20,5,'#fff','#7a4b2a',1.2); ord[i].forEach((it,j)=>sprFit('sup'+it,x-w/2+5+9+j*18,66,15,15)); rr(x-w/2+4,72,w-8,3,1.5,'#5cc79d'); });
+    rr(40,108,160,22,6,'#fbf0dae6','#7a4b2a',1.4); [2,5,0,7,1].forEach((it,j)=>{ sprFit('sup'+it,58+j*31,119,18,18); mt(String(j+1),47+j*31,115,5,'#7a4b2a88'); });
+    mt('Chạm món trong khay theo bóng thoại',120,141,6.8,'#7a4b2a','center');
+    mt('Nhiều bạn cùng lúc,',240,70,7.5,'#7a4b2a','center'); mt('ai cần món nào trước',240,81,7.5,'#7a4b2a','center'); mt('thì nhận món đó',240,92,7.5,'#7a4b2a','center');
+    mt('Đúng liên tiếp:',240,104,7,'#7a4b2a','center'); mt('x2 x3 x4',240,117,10,'#c0392b','center'); mt('Chậm hoặc nhầm: mất combo',240,129,5.8,'#e5533d','center');
+  } else if(m.z===4){
+    const ic=[0,1,2,4]; for(let i=0;i<4;i++){ const x=76+i*30; sprFit('soc'+ic[i],x,70,17,17); mx.fillStyle='#7a4b2a'; mx.beginPath(); mx.moveTo(x-4,84); mx.lineTo(x+4,84); mx.lineTo(x,90); mx.fill();
+      mx.beginPath(); mx.arc(x,102,9,0,6.283); mx.fillStyle='#ffffffcc'; mx.fill(); mx.lineWidth=1.3; mx.strokeStyle='#4b2e1b'; mx.stroke(); keycap(x,121,['←','↓','↑','→'][i]); }
+    mt('Bấm khi chạm vạch',234,72,7.5,'#7a4b2a','center'); mt('Đúng liên tiếp:',234,88,7,'#7a4b2a','center'); mt('x2 x3 x4 x5',234,101,10,'#c0392b','center'); noMark(214,118); mt('Trượt: bị trừ',240,121,7,'#e5533d','center');
+  } else {
+    spr('bus0',84,106,{ay:1,s:.6}); mx.fillStyle='#ffd34e'; mx.beginPath(); mx.moveTo(86,66); mx.lineTo(96,66); mx.lineTo(91,74); mx.fill();
+    mR(160,100,2,12,'#7a4b2a'); spr('stop0',176,104,{ay:1,s:.5}); mt('vạch dừng',161,118,6,'#7a4b2a','center'); okMark(128,86);
+    keycap(250,78,'Space',34); mt('GIỮ = phanh',250,98,8,'#c0392b','center'); mt('THẢ = chạy',250,111,8,'#3b82c4','center'); mt('hoặc giữ chuột',250,123,6.5,'#7a4b2a','center');
+  } }
+function mgStep(dt){ if(!mg) return; mg.t+=dt;
+  if(mg.phase==='play'){ mg.pt+=dt; mg.d.upd(mg,dt); }
+  else if(mg.phase==='end'){ mg.endT+=dt; if(Math.random()<dt*14) mp.push({x:rnd(0,320),y:-4,vx:rnd(-12,12),vy:rnd(30,70),life:2.4,c:pick(['#ffd34e','#ff6b6b','#5fa8e0','#5cc79d','#fff']),s:rnd(2,3.5)}); }
+  mg.tapQ.length=0; mg.keyQ.length=0; mg.numQ.length=0; mg.actQ.length=0;
+  for(let i=mp.length-1;i>=0;i--){ const q=mp[i]; q.life-=dt; q.x+=q.vx*dt; q.y+=q.vy*dt; q.vy+=110*dt; if(q.life<=0) mp.splice(i,1); }
+  for(let i=mft.length-1;i>=0;i--){ const q=mft[i]; q.life-=dt; q.y-=22*dt; if(q.life<=0) mft.splice(i,1); }
+  mgDraw(); }
+function mgDraw(){ const m=mg, d=m.d; mx.setTransform(2,0,0,2,0,0); mx.imageSmoothingEnabled=true; mx.clearRect(0,0,320,180);
+  d.drw(m);
+  for(const q of mp){ mx.globalAlpha=clamp(q.life*2,0,1); mR(q.x,q.y,q.s,q.s,q.c); } mx.globalAlpha=1;
+  for(const q of mft){ mx.globalAlpha=clamp(q.life*2,0,1); mt(q.t,q.x,q.y,8,q.col,'center','#fff'); } mx.globalAlpha=1;
+  const p=d.prog(m); mt(d.title,8,13,8,'#fff','left','#4b2e1b'); rr(8,17,120,7,3.5,'#fff9','#4b2e1b',1.2); if(p.v>0) rr(8,17,Math.max(7,120*clamp(p.v,0,1)),7,3.5,'#5cc79d'); mt(p.t,134,24,7,'#fff','left','#4b2e1b');
+  if(m.phase==='intro'){ mR(0,0,320,180,'rgba(40,28,60,.45)'); panel(36,28,248,140); mt(d.title,160,48,12,'#3b82c4','center');
+    mgHow(m); mt(got[m.z]?'Bạn đã có huy hiệu này, chơi lại cho vui nhé':'Hoàn thành để nhận huy hiệu',160,147,6,'#c0392b','center');
+    if(Math.floor(m.t*2)%2===0) mt('Chạm để bắt đầu',160,160,8,'#3ea87f','center'); }
+  if(m.phase==='end'){ const e=m.endT; mx.globalAlpha=clamp(e*2,0,.55); mR(0,0,320,180,'#281c3c'); mx.globalAlpha=1;
+    if(e>.35){ const u=clamp((e-.35)*2.2,0,1), sc=u<1?(1-Math.pow(1-u,3))*1.15:1+Math.sin(e*3)*.02; panel(60,18,200,144); mt('Hoàn thành!',160,40,13,'#3b82c4','center'); spr('badge'+BADGES[m.z].f,160,92,{s:.95*sc}); mt(BADGES[m.z].n,160,142,9,'#7a4b2a','center'); mt(d.end,160,153,6.5,'#c0392b','center');
+      if(e>1.3&&Math.floor(m.t*2)%2===0) mt('Chạm để nhận huy hiệu',160,176,7,'#fff','center','#4b2e1b'); } } }
+mgc.addEventListener('pointerdown',e=>{ if(!mg) return; e.preventDefault(); auInit(); const p=mgPos(e);
+  if(mg.phase==='intro'){ if(mg.t>.3){ mg.phase='play'; mg.pt=0; sfx('click'); } return; }
+  if(mg.phase==='end'){ if(mg.endT>1.3) mgFinish(); return; }
+  mg.px=p.x; mg.py=p.y; mg.down=true; mg.tapQ.push(p); try{ mgc.setPointerCapture(e.pointerId); }catch(_){} });
+mgc.addEventListener('pointermove',e=>{ if(!mg) return; const p=mgPos(e); mg.px=p.x; mg.py=p.y; });
+['pointerup','pointercancel'].forEach(ev=>mgc.addEventListener(ev,()=>{ if(mg) mg.down=false; }));
+$('mgX').addEventListener('click',closeGame);
+function gameAct(){ if(!mg) return; if(mg.phase==='intro'){ if(mg.t>.3){ mg.phase='play'; mg.pt=0; sfx('click'); } } else if(mg.phase==='end'){ if(mg.endT>1.3) mgFinish(); } else { mg.kdown=true; mg.actQ.push(1); mg.tapQ.push({x:mg.px,y:mg.py,key:true}); } }
+/* lời mời chơi sau khi nói chuyện */
+function offerGame(z){ const d=MGS[z]; if(!d) return; state='ask'; askEl.dataset.z=z; $('askT').textContent='Chơi thử mini-game "'+d.title+'"? '+(got[z]?'Bạn đã có huy hiệu rồi, chơi lại cho vui nhé.':'Hoàn thành để nhận huy hiệu.'); askEl.hidden=false; promptEl.hidden=true; }
+function askYes(){ const z=+askEl.dataset.z; askEl.hidden=true; sfx('click'); openGame(z); }
+function askNo(){ askEl.hidden=true; state='play'; sfx('close'); }
+$('askY').addEventListener('click',askYes); $('askN').addEventListener('click',askNo);
+$('bdgBtn').addEventListener('click',()=>openMenu('badges'));
+function badgeBook(){ $('menuT').textContent='Sổ huy hiệu · '+gotN()+'/6';
+  menuBody.innerHTML='<p class="menu-note">Mỗi chặng có một mini-game nhỏ, chơi sau khi nói chuyện với người giới thiệu. Gom đủ 6 huy hiệu để mở khoá chặng cuối.</p><div class="bk">'
+   +BADGES.map((b,i)=>'<figure class="'+(got[i]?'on':'')+'"><img src="assets/g/badge'+(b.f+(got[i]?0:6))+'.png" alt=""><figcaption><b>'+esc(got[i]?b.n:'???')+'</b><small>'+esc(Z[i].short)+' · '+esc(MGS[i].title)+'</small></figcaption></figure>').join('')+'</div>'
+   +(allB()?'<p class="menu-note"><b>Đủ 6 huy hiệu!</b> Đi tới cuối đường, khu đất "?" đã sẵn sàng cho chặng tiếp theo.</p>':''); }
+
+/* ---------- boot ---------- */
+$('gTitle').textContent='Hành trình của '+CONFIG.name;
+$('gSub').textContent=CONFIG.role;
+$('iTitle').textContent='Hành trình của '+CONFIG.name;
+$('iText').textContent=CONFIG.intro;
+setZone(-1);
+requestAnimationFrame(frame);
+})();
+</script>
