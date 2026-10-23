@@ -75,6 +75,31 @@ canvas{display:block; width:100%; height:auto; aspect-ratio:16/9; image-renderin
 .btn:active{transform:translateY(3px); box-shadow:inset 0 3px 0 #9be6c7, 0 1px 0 var(--green-d)}
 :focus-visible{outline:3px solid var(--blue); outline-offset:2px}
 
+
+/* ===== điện thoại (màn dọc): gọn, to, dễ bấm ===== */
+.btn2{display:none; background:var(--paper); color:var(--brown-d); text-shadow:none; border:3px solid var(--brown); box-shadow:inset 0 0 0 2px var(--paper2), 0 3px 0 var(--brown-d)}
+@media (pointer:coarse) and (max-aspect-ratio:1/1){ .btn2{display:inline-block} #startBtn{order:2} .btn2{order:1} .intro .btn{font-size:14px; padding:10px 16px} #startFs{background:var(--green); color:#fff; text-shadow:0 2px 0 var(--green-d); border-color:var(--green-d); box-shadow:inset 0 3px 0 #9be6c7, 0 4px 0 var(--green-d)} #startBtn{background:var(--paper); color:var(--brown-d); text-shadow:none; border:3px solid var(--brown); box-shadow:inset 0 0 0 2px var(--paper2), 0 3px 0 var(--brown-d)} }
+@media (max-width:600px){
+  body{padding-block:8px; padding-left:max(8px, env(safe-area-inset-left,0px)); padding-right:max(8px, env(safe-area-inset-right,0px))}
+  .wrap{gap:8px}
+  h1{font-size:19px}
+  .sub{font-size:11.5px; line-height:1.3}
+  .top{gap:6px}
+  .stats{flex-wrap:nowrap; gap:5px; width:100%; font-size:11px; letter-spacing:0}
+  .stats span,.stats .bdgBtn{padding:3px 9px 3px 3px; gap:5px; white-space:nowrap}
+  .stats span::before,.stats .bdgBtn::before{display:none}
+  .stats span,.stats .bdgBtn{padding:4px 10px; flex:1 1 auto; justify-content:center}
+  .stats b{font-size:12px}
+  .stats .iconbtn{flex:0 0 auto; width:28px; height:28px; font-size:14px}
+  .stagewrap{margin:2px -4px 10px; border-width:3px; border-radius:10px}
+  .intro h2{display:none}
+  .intro p{font-size:12px; padding:8px 10px}
+  .stagewrap:has(#intro:not([hidden])) .badge{display:none}
+  .chapters{padding:2px 2px 8px}
+  .stagewrap:has(#intro:not([hidden])) #fsBtn{display:none}
+}
+@media (max-width:340px){ .stats{flex-wrap:wrap} }
+@media (max-width:380px){ .stats{font-size:10px; gap:4px} .stats span,.stats .bdgBtn{padding:4px 6px} .stats b{font-size:11px} .stats .iconbtn{width:26px; height:26px} }
 /* thanh chặng: tab giấy kem, chặng hiện tại màu xanh */
 .chapters{display:flex; gap:8px; overflow-x:auto; padding:4px 6px 10px; scrollbar-width:thin}
 .chapters button{flex:0 0 auto; display:flex; align-items:center; gap:6px; font:700 12px var(--font-display); color:var(--brown-d); border-radius:999px; padding:3px 12px 3px 4px; cursor:pointer; white-space:nowrap}
@@ -183,7 +208,7 @@ canvas{display:block; width:100%; height:auto; aspect-ratio:16/9; image-renderin
 
 .fsbtn{position:absolute; right:8px; top:8px; z-index:5; width:34px; height:34px; border-radius:10px; border:3px solid var(--brown); background:var(--paper); color:var(--brown-d); font:700 17px/1 var(--font-display); cursor:pointer; box-shadow:inset 0 0 0 2px var(--paper2), 0 3px 0 var(--brown-d); padding:0; opacity:.92}
 .mg .fsbtn{z-index:21; right:104px}
-.rothint{position:absolute; left:50%; bottom:10px; transform:translateX(-50%); z-index:22; max-width:92%; padding:7px 12px; border-radius:999px; background:var(--paper); color:var(--brown-d); border:3px solid var(--brown); font:700 12px/1.3 var(--font-display); text-align:center; box-shadow:0 3px 0 var(--brown-d); pointer-events:none}
+.rothint{position:absolute; left:50%; bottom:4px; transform:translateX(-50%); z-index:22; max-width:94%; white-space:nowrap; padding:3px 10px; border-radius:999px; background:var(--paper); color:var(--brown-d); border:2px solid var(--brown); font:700 10px/1.3 var(--font-display); text-align:center; box-shadow:0 3px 0 var(--brown-d); pointer-events:none}
 .mg canvas{object-fit:contain}
 .stagewrap.fs{position:fixed !important; inset:0 !important; width:100% !important; height:100% !important; margin:0 !important; border:0 !important; border-radius:0 !important; box-shadow:none !important; z-index:9999; background:#000}
 .stagewrap.fs>canvas#cv{position:absolute; inset:0; width:100%; height:100%; aspect-ratio:auto; object-fit:contain}
@@ -222,7 +247,7 @@ canvas{display:block; width:100%; height:auto; aspect-ratio:16/9; image-renderin
       <div class="menu-body" id="menuBody" tabindex="0"></div>
     </div>
     <button type="button" class="fsbtn" id="fsBtn" aria-label="Toàn màn hình" title="Toàn màn hình">⛶</button>
-    <div class="mg" id="mg" hidden><canvas id="mgc" width="640" height="360" aria-label="Mini-game"></canvas><div class="rothint" id="rotHint" hidden>↻ Xoay ngang điện thoại hoặc bấm ⛶ để chơi rộng hơn</div><button class="lb-x" id="mgX" type="button">Thoát · Esc</button><button type="button" class="fsbtn" id="mgFs" aria-label="Toàn màn hình">⛶</button></div>
+    <div class="mg" id="mg" hidden><canvas id="mgc" width="640" height="360" aria-label="Mini-game"></canvas><div class="rothint" id="rotHint" hidden>↻ Xoay ngang hoặc bấm ⛶ để chơi rộng hơn</div><button class="lb-x" id="mgX" type="button">Thoát · Esc</button><button type="button" class="fsbtn" id="mgFs" aria-label="Toàn màn hình">⛶</button></div>
     <div class="ask" id="ask" hidden><p id="askT"></p><div class="askb"><button type="button" class="btn small ghost" id="askN">Để sau</button><button type="button" class="btn small" id="askY">Chơi thử</button></div></div>
     <div class="toast" id="toast" hidden></div>
     <div class="lb" id="lb" hidden role="dialog" aria-label="Xem ảnh lớn">
@@ -238,6 +263,7 @@ canvas{display:block; width:100%; height:auto; aspect-ratio:16/9; image-renderin
       <h2 id="iTitle"></h2>
       <p id="iText"></p>
       <button class="btn" id="startBtn" type="button">Bắt đầu hành trình</button>
+      <button class="btn btn2" id="startFs" type="button">Chơi toàn màn hình · xoay ngang</button>
     </div>
   </div>
 
@@ -1401,6 +1427,7 @@ addEventListener('keyup',e=>{
 addEventListener('blur',()=>{ keys.l=false; keys.r=false; shiftDown=false; });
 $('runBtn').addEventListener('pointerdown',e=>{ e.preventDefault(); runLatch=!runLatch; sfx('run'); $('runBtn').classList.toggle('on',runLatch); $('runBtn').setAttribute('aria-pressed',runLatch); });
 $('startBtn').addEventListener('click',startGame);
+$('startFs').addEventListener('click',()=>{ startGame(); if(!fsOn) enterFs(); });
 $('cv').addEventListener('pointerdown',()=>{ if(state==='cut') endCut(); });
 dialogEl.addEventListener('click',advance);
 promptEl.addEventListener('click',()=>{ promptEl.blur(); act(); });
@@ -1708,7 +1735,7 @@ function mgWin(){ if(!mg||mg.phase!=='play') return; mg.phase='end'; mg.endT=0; 
 function openGame(z){ const d=MGS[z]; if(!d) return; auInit(); sfx('open'); keys.l=false; keys.r=false;
   mg={d,z,t:0,pt:0,phase:'intro',endT:0,tapQ:[],keyQ:[],numQ:[],actQ:[],px:160,py:90,down:false,kdown:false}; mp=[]; mft=[]; d.need.concat(['badge'+BADGES[z].f,'badge'+(BADGES[z].f+6)]).forEach(G); if(z===5){ G('city0'); G('city2'); }
   d.init(mg); { const rh=$('rotHint'); rh.hidden=!(matchMedia('(pointer:coarse)').matches&&innerHeight>innerWidth&&!fsOn); clearTimeout(rh._t); if(!rh.hidden) rh._t=setTimeout(()=>{ rh.hidden=true; },6000); } mgEl.hidden=false; stageEl.classList.add('gm'); state='game'; promptEl.hidden=true; dialogEl.hidden=true; askEl.hidden=true; $('stage').classList.remove('talking'); }
-function closeGame(){ if(!mg) return; mgEl.hidden=true; $('rotHint').hidden=true; stageEl.classList.remove('gm'); engine(false); mg=null; state='play'; }
+function closeGame(){ if(!mg) return; if(autoFs){ autoFs=false; if(fsOn) exitFs(); } mgEl.hidden=true; $('rotHint').hidden=true; stageEl.classList.remove('gm'); engine(false); mg=null; state='play'; }
 function mgFinish(){ const z=mg.z, first=!got[z]; got[z]=true; saveBadges(); closeGame(); refresh();
   toast(first?(allB()?'Đủ 6 huy hiệu! Cổng "?" cuối đường đã sáng đèn.':'Đã nhận huy hiệu "'+BADGES[z].n+'" ('+gotN()+'/6)'):'Chơi lại vui chưa nào!'); }
 let toastT=0; function toast(t){ toastEl.textContent=t; toastEl.hidden=false; toastEl.classList.remove('show'); void toastEl.offsetWidth; toastEl.classList.add('show'); clearTimeout(toastT); toastT=setTimeout(()=>{ toastEl.hidden=true; },4200); }
@@ -1776,7 +1803,10 @@ $('mgX').addEventListener('click',closeGame);
 function gameAct(){ if(!mg) return; if(mg.phase==='intro'){ if(mg.t>.3){ mg.phase='play'; mg.pt=0; sfx('click'); } } else if(mg.phase==='end'){ if(mg.endT>1.3) mgFinish(); } else { mg.kdown=true; mg.actQ.push(1); mg.tapQ.push({x:mg.px,y:mg.py,key:true}); } }
 /* lời mời chơi sau khi nói chuyện */
 function offerGame(z){ const d=MGS[z]; if(!d) return; state='ask'; askEl.dataset.z=z; $('askT').textContent='Chơi thử mini-game "'+d.title+'"? '+(got[z]?'Bạn đã có huy hiệu rồi, chơi lại cho vui nhé.':'Hoàn thành để nhận huy hiệu.'); askEl.hidden=false; promptEl.hidden=true; }
-function askYes(){ const z=+askEl.dataset.z; askEl.hidden=true; sfx('click'); openGame(z); }
+let autoFs=false;
+function askYes(){ const z=+askEl.dataset.z; askEl.hidden=true; sfx('click');
+  if(matchMedia('(pointer:coarse)').matches&&innerHeight>innerWidth&&!fsOn){ enterFs(); autoFs=true; }
+  openGame(z); }
 function askNo(){ askEl.hidden=true; state='play'; sfx('close'); }
 $('askY').addEventListener('click',askYes); $('askN').addEventListener('click',askNo);
 $('bdgBtn').addEventListener('click',()=>openMenu('badges'));
